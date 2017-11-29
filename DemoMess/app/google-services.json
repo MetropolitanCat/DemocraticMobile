@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "309427717432",
+    "firebase_url": "https://demomess-2c366.firebaseio.com",
+    "project_id": "demomess-2c366",
+    "storage_bucket": "demomess-2c366.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309427717432:android:7dd992a36bd84332",
+        "android_client_info": {
+          "package_name": "com.example.edgar.democraticmessage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309427717432-s2j3aecmqh3ml9tli5fkeo451fb4tl8l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.edgar.democraticmessage",
+            "certificate_hash": "c1522de3582b2749fd3a60f14fb2fadfe288bd86"
+          }
+        },
+        {
+          "client_id": "309427717432-mag7f7rjvtv2unptssfrr4hglu9samee.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABtPyKygi-KhamJlhyP9VC3OIxuV5AJyc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "309427717432-mag7f7rjvtv2unptssfrr4hglu9samee.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
