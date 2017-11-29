@@ -3,7 +3,7 @@
 Current Features of the app include:
 
 # Basic Talk budget system:
-  Simple word limiting per conference\n
+  Simple word limiting per conference
   Simple Statistics viewing
   Incomplete Request functionality
  
