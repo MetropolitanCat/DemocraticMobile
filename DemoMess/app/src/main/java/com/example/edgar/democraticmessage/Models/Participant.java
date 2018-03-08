@@ -11,14 +11,16 @@ import java.util.Map;
 
 public class Participant {
     public String username;
+    public String uID;
     public int budget;
     public int timeUsed;
     public String userRequest;
 
     public Participant(){}
 
-    public Participant(String username, int budget, int timeUsed, String userRequest){
+    public Participant(String username, String uID, int budget, int timeUsed, String userRequest){
         this.username = username;
+        this.uID = uID;
         this.budget = budget;
         this.timeUsed = timeUsed;
         this.userRequest = userRequest;
@@ -28,6 +30,7 @@ public class Participant {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("username", username);
+        result.put("uID", uID);
         result.put("budget", budget);
         result.put("timeUsed", timeUsed);
         result.put("userRequest", userRequest);

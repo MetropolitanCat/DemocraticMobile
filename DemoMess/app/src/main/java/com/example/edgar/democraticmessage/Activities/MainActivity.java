@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
     private DatabaseReference mRooms;
     private RecyclerView mCommentsRecycler;
     private RoomTypeAdapter mAdapter;
-    private static Context statContext;
+    private static String userName;
     private static String userId;
 
     @Override
@@ -49,7 +49,7 @@ public class MainActivity extends BaseActivity {
         mCommentsRecycler = findViewById(R.id.recyclerView);
         mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-        statContext = this;
+        userName = getUName();
         userId = getUid();
     }
 
@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
         mAdapter.cleanupListener();
     }
 
-    private static class RoomTypeViewHolder extends RecyclerView.ViewHolder {
+    private class RoomTypeViewHolder extends RecyclerView.ViewHolder {
 
         private TextView rName;
         private TextView rType;
@@ -90,7 +90,7 @@ public class MainActivity extends BaseActivity {
 
                     //Check if room is full
                     if(currentPart > (maxPart -1)){
-                        Toast.makeText(statContext, "Room is full!!!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Room is full!!!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -108,15 +108,17 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.child(userId).exists()){
-                                Toast.makeText(statContext, "User exists!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "User exists!", Toast.LENGTH_SHORT).show();
+                                roomJoin("" + rKey.getText());
                             }
                             else{
-                                Participant part = new Participant(userId, budgetShare, 0 , null);
+                                Participant part = new Participant(userName,userId, budgetShare, 0 , null);
                                 Map<String, Object> sendMessage = part.toMap();
                                 Map<String, Object> childUpdates = new HashMap<>();
                                 childUpdates.put( "/participants/" + "" + rKey.getText() + "/" + userId, sendMessage);
 
                                 newParticipant.updateChildren(childUpdates);
+                                roomJoin("" + rKey.getText());
                             }
                         }
 
@@ -125,17 +127,18 @@ public class MainActivity extends BaseActivity {
 
                         }
                     });
-
-
-                    Intent intent = new Intent(statContext, Room.class);
-                    intent.putExtra("RoomKey",rKey.getText());
-                    statContext.startActivity(intent);
                 }
             });
         }
+
+        private void roomJoin(String roomKey){
+            Intent intent = new Intent(getApplicationContext(), Room.class);
+            intent.putExtra("RoomKey",roomKey);
+            startActivity(intent);
+        }
     }
 
-    private static class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeViewHolder> {
+    private class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeViewHolder> {
 
         private Context mContext;
         private DatabaseReference mDatabaseReference;

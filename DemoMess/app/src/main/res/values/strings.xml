@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Democratic Message</string>
+    <string name="alertDeleteTitle">Delete current room?</string>
+    <string name="alertDeleteMessage">Would you like to delete the room?</string>
+    <string name="alertYes">Yes</string>
+    <string name="alertNo">No</string>
+
+    <string name="requestTitle">Request</string>
+    <string name="requestMess">You have a request</string>
+    <string name="title_activity_request">Request</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
 </resources>

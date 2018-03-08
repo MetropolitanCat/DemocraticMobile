@@ -1,5 +1,6 @@
 package com.example.edgar.democraticmessage.Activities;
 
+import com.example.edgar.democraticmessage.Models.Participant;
 import com.example.edgar.democraticmessage.Models.RoomType;
 import com.example.edgar.democraticmessage.Models.User;
 import com.example.edgar.democraticmessage.R;
@@ -46,7 +47,7 @@ public class RoomCreate extends BaseActivity {
         final String participants = roomParticipants.getText().toString();
         final int budgetType = 2;
         final String conferenceType = "Basic";
-        final int startingBudget = 25;
+        final int startingBudget = Integer.parseInt(budget) / Integer.parseInt(participants);
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "You need to input a room name",Toast.LENGTH_SHORT).show();
@@ -69,14 +70,19 @@ public class RoomCreate extends BaseActivity {
                         // Get user value
                         User user = dataSnapshot.getValue(User.class);
 
-                        // [START_EXCLUDE]
                         if (user == null) {
                             // User is null, error out
                         } else {
-                            // Create new room
-
-                            createRoom(name,  budgetType, Integer.parseInt(budget), startingBudget, conferenceType, Integer.parseInt(participants), password);
-
+                            //Create the master user who has the ability to delete the room
+                            //The room key is obtained from the create room function
+                            createMasterUser(
+                                    createRoom(name,
+                                               budgetType,
+                                               Integer.parseInt(budget),
+                                               startingBudget,
+                                               conferenceType,
+                                               Integer.parseInt(participants), password), startingBudget);
+                            //Leave activity
                             finish();
                         }
                     }
@@ -87,16 +93,43 @@ public class RoomCreate extends BaseActivity {
                 });
     }
 
-    private void createRoom(String name, int type, int budget, int startBudget, String conference, int participants, String password){
+    private String createRoom(String name, int type,
+                            int budget, int startBudget,
+                            String conference, int participants,
+                            String password){
         String key = mDatabase.child("rooms").push().getKey();
-        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, 0, password);
+        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, 0, password, getUid());
         Map<String, Object> newRoom = room.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
          childUpdates.put("/rooms/" + key, newRoom);
 
         mDatabase.updateChildren(childUpdates);
+        return  key;
     }
 
+    private void createMasterUser(final String roomKey, final int startBudget){
+
+        final DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference();
+
+        dataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            Participant part = new Participant("Master: " + getUName(),getUid(), startBudget, 0 , null);
+            Map<String, Object> sendMessage = part.toMap();
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put( "/participants/" + "" + roomKey + "/" + getUid(), sendMessage);
+
+            dataRef.updateChildren(childUpdates);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 }

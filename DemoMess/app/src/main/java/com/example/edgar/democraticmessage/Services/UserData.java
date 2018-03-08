@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.IInterface;
+import android.os.RemoteCallbackList;
 import android.util.Log;
 
 import com.example.edgar.democraticmessage.Activities.MainActivity;
 import com.example.edgar.democraticmessage.Activities.Room;
 import com.example.edgar.democraticmessage.R;
+
+import static android.app.Notification.CATEGORY_MESSAGE;
 
 public class UserData extends Service {
     private final IBinder binder = new DataBinder();
@@ -20,11 +23,11 @@ public class UserData extends Service {
     private int userBudgetType = 0;
     private boolean noBudget = false;
     private int timeUsed = 0;
-    private Notification notif = null;
-    private static int NOTIFICATION = 5;
+    private String roomKey = "";
 
     public UserData() {
     }
+
 
     public class DataBinder extends Binder implements IInterface{
         @Override
@@ -48,33 +51,9 @@ public class UserData extends Service {
 
         public void setTimeUsed(int used){timeUsed += used;}
 
-        public void changeRequest(Boolean change){
-            if(change){
-                Log.d("Notification","True, make");
-                createRequest();
-                startForeground(NOTIFICATION,notif);
-            }
-            else{
-                Log.d("Notification","False, remove");
-                stopForeground(true);
-            }
-        }
+        public void setRoomKey(String key){roomKey = key;}
 
-        public void createRequest(){
-            // Not working yet
-            Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-            PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
-            //Make sure that only one notification is active at a time and that it overwrites the old notification
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            Log.d("Notification","Making notification");
-            notif = new Notification.Builder(getApplicationContext())
-                    //Icon image is open source and obtained from https://material.io/icons/
-                    .setSmallIcon(R.drawable.ic_comment_black_24dp)
-                    .setContentTitle(getApplicationContext().getString(R.string.app_name))
-                    .setContentIntent(intent)
-                    .setContentText("Request!!!!")
-                    .build();
-        }
+        public String getRoomKey() {return roomKey;}
 
     }
 

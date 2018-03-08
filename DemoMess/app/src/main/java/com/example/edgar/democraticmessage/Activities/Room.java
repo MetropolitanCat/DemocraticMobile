@@ -13,31 +13,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +56,8 @@ public class Room extends BaseActivity {
     private String roomData;
     private RecyclerView mMessageRecycler;
     private Room.MessageAdapter mAdapter;
-
+    private boolean delete = false;
+    private MenuItem menuReq;
 
     private UserData.DataBinder dataService = null;
 
@@ -68,7 +71,7 @@ public class Room extends BaseActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         messageBody = findViewById(R.id.input);
         roomData = intent.getStringExtra("RoomKey");
-        roomKey = "/Message/" + intent.getStringExtra("RoomKey") + "/";
+        roomKey = "/Message/" + roomData + "/";
 
         mMessageRecycler = findViewById(R.id.messView);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -87,7 +90,28 @@ public class Room extends BaseActivity {
             dataService = (UserData.DataBinder) service;
             Log.d("Service","Service start");
             getUserInfo(true);
+            DatabaseReference notifInfo = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
+            notifInfo.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Participant part = dataSnapshot.getValue(Participant.class);
 
+                    if(part.userRequest != null){
+                        Log.d("Room","There is a request");
+                        showRequest();
+                        menuReq.setVisible(true);
+                    }
+                    else{
+                        menuReq.setVisible(false);
+                        Log.d("Room", "No requests");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -95,6 +119,44 @@ public class Room extends BaseActivity {
         }
     };
 
+    public void showRequest(){
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast,
+                (ViewGroup) findViewById(R.id.toast_layout_root));
+        ((TextView) layout.findViewById(R.id.title)).setText(R.string.requestTitle);
+        ((TextView) layout.findViewById(R.id.message)).setText(R.string.requestMess);
+
+        final PopupWindow pw = new PopupWindow(layout,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+        pw.showAtLocation(layout,  Gravity.END , 0, 0);
+
+        final DatabaseReference removeReq = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
+
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeReq.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        goRequest();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                pw.dismiss();
+            }
+        });
+    }
+
+    private void goRequest(){
+        Intent intent = new Intent(this,Request.class);
+        startActivity(intent);
+    }
 
     private void getUserInfo(final boolean set){
         String userId = getUid();
@@ -103,11 +165,10 @@ public class Room extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Participant part = dataSnapshot.getValue(Participant.class);
-                //Log.d("Budget", ""+part.budget);
-                //Log.d("Used Budget", ""+part.timeUsed);
                 if(set){
                     dataService.setBudget(part.budget);
                     dataService.setTimeUsed(part.timeUsed);
+                    dataService.setRoomKey(roomData);
                 }
                 else {
                     roomInfo.child("budget").setValue(dataService.getBudget());
@@ -135,7 +196,8 @@ public class Room extends BaseActivity {
         super.onDestroy();
         //Unbind the service when the activity is destroyed
         if(serviceConnection!=null) {
-            getUserInfo(false);
+
+            if(!delete) getUserInfo(false);
             unbindService(serviceConnection);
             serviceConnection = null;
         }
@@ -150,7 +212,7 @@ public class Room extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 RoomType tempRoom = dataSnapshot.getValue(RoomType.class);
-                change(tempRoom.currentParticipants -1, roomData);
+                if(tempRoom != null)change(tempRoom.currentParticipants -1, roomData);
             }
 
             @Override
@@ -167,7 +229,8 @@ public class Room extends BaseActivity {
         roomInfo.child(key).child("currentParticipants").setValue(val);
     }
 
-    private static class MessageViewHolder extends RecyclerView.ViewHolder {
+
+    private class MessageViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mName;
         private TextView mText;
@@ -182,7 +245,7 @@ public class Room extends BaseActivity {
         }
     }
 
-    private static class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
+    private class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
 
         private Context mContext;
         private DatabaseReference mDatabaseReference;
@@ -262,8 +325,6 @@ public class Room extends BaseActivity {
                     // displaying this message and if so move it.
                     RoomType messageMoved = dataSnapshot.getValue(RoomType.class);
                     String messageKey = dataSnapshot.getKey();
-
-                    // ...
                 }
 
                 @Override
@@ -310,7 +371,6 @@ public class Room extends BaseActivity {
     public void sendMessage(View v){
 
         final String message = messageBody.getText().toString();
-
         // Title is required
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, "You need to input a message", Toast.LENGTH_SHORT).show();
@@ -334,6 +394,8 @@ public class Room extends BaseActivity {
                                     "Error: could not fetch user.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
+
+                            if(!dataService.getEmpty()){
                             //Word counting function, from stack overflow
                             String trimmed = message.trim();
                             final int words = trimmed.isEmpty() ? 0 : trimmed.split("\\s+").length;
@@ -345,10 +407,10 @@ public class Room extends BaseActivity {
                                 getUserInfo(false);
                             }
 
-                            if(!dataService.getEmpty()){
+
                                 String key = mDatabase.child(roomKey).push().getKey();
 
-                                Message mess = new Message(user.username , message, 0);
+                                Message mess = new Message(user.username , message, words);
                                 Map<String, Object> sendMessage = mess.toMap();
                                 Map<String, Object> childUpdates = new HashMap<>();
                                 childUpdates.put(roomKey + key, sendMessage);
@@ -380,7 +442,58 @@ public class Room extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.room_menu, menu);
+        menuReq = menu.findItem(R.id.infoReq);
+        menuReq.setVisible(false);
         return true;
+    }
+
+    private void deleteRoom(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.alertDeleteTitle);
+        builder.setMessage(R.string.alertDeleteMessage);
+        builder.setPositiveButton(R.string.alertYes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                final DatabaseReference dataInfo = FirebaseDatabase.getInstance().getReference();
+                dataInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        RoomType room = dataSnapshot.child("rooms").child(roomData).getValue(RoomType.class);
+
+                        if(room.roomOwner.equals(getUid())){
+                            Toast.makeText(Room.this,"Owner",Toast.LENGTH_SHORT).show();
+
+                            if(room.currentParticipants <= 1){
+                                dataSnapshot.child("rooms").child(roomData).getRef().removeValue();
+                                dataSnapshot.child("Message").child(roomData).getRef().removeValue();
+                                dataSnapshot.child("participants").child(roomData).getRef().removeValue();
+                                delete = true;
+                                finish();
+                            }
+                            else{
+                                Toast.makeText(Room.this,"There are still people in the room",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else {
+                            Toast.makeText(Room.this,"You are not the owner of the room",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton(R.string.alertNo, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
@@ -395,6 +508,12 @@ public class Room extends BaseActivity {
                 Intent intent = new Intent(Room.this, StatisticScreen.class);
                 intent.putExtra("RoomKey",roomData);
                 startActivity(intent);
+                return true;
+            case R.id.infoDelete:
+                deleteRoom();
+                return true;
+            case R.id.infoReq:
+                goRequest();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

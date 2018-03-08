@@ -13,14 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.edgar.democraticmessage.Models.Participant;
-import com.example.edgar.democraticmessage.Models.RoomType;
 import com.example.edgar.democraticmessage.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -29,10 +27,10 @@ import java.util.List;
 
 public class StatisticScreen extends BaseActivity {
     private DatabaseReference users;
+    private DatabaseReference mainData;
     private RecyclerView userRecycler;
     private UserListAdapter userAdapter;
-    private static String roomKey;
-    private static Context statContext;
+    private String roomKey;
 
 
     @Override
@@ -43,11 +41,11 @@ public class StatisticScreen extends BaseActivity {
         Intent intent = getIntent();
         roomKey = intent.getStringExtra("RoomKey");
 
-        users = FirebaseDatabase.getInstance().getReference().child("participants").child(roomKey);
+        mainData = FirebaseDatabase.getInstance().getReference();
+        users = mainData.child("participants").child(roomKey);
 
         userRecycler = findViewById(R.id.statUser);
         userRecycler.setLayoutManager(new LinearLayoutManager(this));
-        statContext = this;
     }
 
 
@@ -66,9 +64,10 @@ public class StatisticScreen extends BaseActivity {
         userAdapter.cleanupListener();
     }
 
-    private static class UserListHolder extends RecyclerView.ViewHolder {
+    private class UserListHolder extends RecyclerView.ViewHolder {
 
         private TextView uName;
+        private String userName;
         private String uID;
         private String uBudgetUsed;
 
@@ -80,17 +79,18 @@ public class StatisticScreen extends BaseActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(statContext,StatisticsUser.class);
-                    intent.putExtra("UserId", uID);
+                    Intent intent = new Intent(getApplicationContext(),StatisticsUser.class);
+                    intent.putExtra("userName", userName);
+                    intent.putExtra("userID",uID);
                     intent.putExtra("RoomId", roomKey);
                     intent.putExtra("BudgetUsed",uBudgetUsed);
-                    statContext.startActivity(intent);
+                    startActivity(intent);
                 }
             });
         }
     }
 
-    private static class UserListAdapter extends RecyclerView.Adapter<UserListHolder> {
+    private class UserListAdapter extends RecyclerView.Adapter<UserListHolder> {
 
         private Context mContext;
         private DatabaseReference mDatabaseReference;
@@ -191,7 +191,8 @@ public class StatisticScreen extends BaseActivity {
         public void onBindViewHolder(UserListHolder holder, int position) {
             Participant part = mUsers.get(position);
             holder.uName.setText(part.username);
-            holder.uID = part.username;
+            holder.userName = part.username;
+            holder.uID = part.uID;
             holder.uBudgetUsed = Integer.toString(part.timeUsed);
         }
 

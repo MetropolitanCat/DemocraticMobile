@@ -1,15 +1,12 @@
 package com.example.edgar.democraticmessage.Activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.edgar.democraticmessage.Models.Participant;
 import com.example.edgar.democraticmessage.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,14 +14,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class StatisticsUser extends BaseActivity {
 
     private TextView userName;
     private TextView roomID;
     private TextView userTimeUsed;
+    private String userID;
     private Button userRequest;
 
     @Override
@@ -38,14 +33,15 @@ public class StatisticsUser extends BaseActivity {
         userRequest = findViewById(R.id.requestButton);
 
         Intent intent = getIntent();
-        userName.setText(intent.getStringExtra("UserId"));
+        userName.setText(intent.getStringExtra("userName"));
+        userID = intent.getStringExtra("userID");
         roomID.setText(intent.getStringExtra("RoomId"));
         userTimeUsed.setText(intent.getStringExtra("BudgetUsed"));
     }
 
     public void request(View v){
         final DatabaseReference newParticipant = FirebaseDatabase.getInstance().getReference();
-        final DatabaseReference roomUser = newParticipant.child("participants").child("" + roomID.getText()).child("" + userName.getText());
+        final DatabaseReference roomUser = newParticipant.child("participants").child("" + roomID.getText()).child(userID);
 
         roomUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
