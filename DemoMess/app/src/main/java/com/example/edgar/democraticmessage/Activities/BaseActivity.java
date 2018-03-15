@@ -6,11 +6,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class BaseActivity extends AppCompatActivity {
 
-    public String getUid() {
+    String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-    public String getUName(){
+    String getUName(){
         return FirebaseAuth.getInstance().getCurrentUser().getEmail();
     }
 }

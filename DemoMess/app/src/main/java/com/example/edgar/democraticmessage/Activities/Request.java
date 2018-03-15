@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.edgar.democraticmessage.Models.Participant;
 import com.example.edgar.democraticmessage.R;
 import com.example.edgar.democraticmessage.Services.UserData;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

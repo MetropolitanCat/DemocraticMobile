@@ -98,7 +98,7 @@ public class RoomCreate extends BaseActivity {
                             String conference, int participants,
                             String password){
         String key = mDatabase.child("rooms").push().getKey();
-        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, 0, password, getUid());
+        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, password, getUid());
         Map<String, Object> newRoom = room.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -116,7 +116,7 @@ public class RoomCreate extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-            Participant part = new Participant("Master: " + getUName(),getUid(), startBudget, 0 , null);
+            Participant part = new Participant("Master: " + getUName(),getUid(), startBudget);
             Map<String, Object> sendMessage = part.toMap();
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put( "/participants/" + "" + roomKey + "/" + getUid(), sendMessage);

@@ -13,18 +13,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +31,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -66,17 +60,20 @@ public class Room extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
 
+        //Retrieve the intent and set up different values to be used in the room activity
         Intent intent = getIntent();
-
+        //Database root reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        //Message text view
         messageBody = findViewById(R.id.input);
+        //Roomkey of selected room
         roomData = intent.getStringExtra("RoomKey");
+        //Database reference string to the associated messages
         roomKey = "/Message/" + roomData + "/";
-
+        //List view display for all messages inside the room
         mMessageRecycler = findViewById(R.id.messView);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        //Start and bind the mp3 service to the activity
+        //Start and bind the data service to the room
         startService(new Intent(this, UserData.class));
         bindService(new Intent(this, UserData.class),
                 serviceConnection, Context.BIND_AUTO_CREATE);
@@ -91,7 +88,7 @@ public class Room extends BaseActivity {
             Log.d("Service","Service start");
             getUserInfo(true);
             DatabaseReference notifInfo = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
-            notifInfo.addValueEventListener(new ValueEventListener() {
+            notifInfo.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Participant part = dataSnapshot.getValue(Participant.class);
@@ -119,7 +116,7 @@ public class Room extends BaseActivity {
         }
     };
 
-    public void showRequest(){
+    private void showRequest(){
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
@@ -132,12 +129,12 @@ public class Room extends BaseActivity {
 
         pw.showAtLocation(layout,  Gravity.END , 0, 0);
 
-        final DatabaseReference removeReq = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
+        final DatabaseReference reqView = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
 
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeReq.addListenerForSingleValueEvent(new ValueEventListener() {
+                reqView.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         goRequest();
@@ -161,18 +158,15 @@ public class Room extends BaseActivity {
     private void getUserInfo(final boolean set){
         String userId = getUid();
         final DatabaseReference roomInfo = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(userId);
-        roomInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+        roomInfo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Participant part = dataSnapshot.getValue(Participant.class);
                 if(set){
                     dataService.setBudget(part.budget);
-                    dataService.setTimeUsed(part.timeUsed);
-                    dataService.setRoomKey(roomData);
                 }
                 else {
                     roomInfo.child("budget").setValue(dataService.getBudget());
-                    roomInfo.child("timeUsed").setValue(dataService.getTimeUsed());
                 }
             }
 
@@ -180,15 +174,31 @@ public class Room extends BaseActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+        roomInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Participant part = dataSnapshot.getValue(Participant.class);
+                if(set){
+                    dataService.setTimeUsed(part.timeUsed);
+                    dataService.setRoomKey(roomData);
+                }
+                else {
+                    roomInfo.child("timeUsed").setValue(dataService.getTimeUsed());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     public void onStart(){
         super.onStart();
-
         mAdapter = new MessageAdapter(this, mDatabase.getRef().child(roomKey));
         mMessageRecycler.setAdapter(mAdapter);
-
     }
 
     @Override
@@ -376,7 +386,6 @@ public class Room extends BaseActivity {
             Toast.makeText(this, "You need to input a message", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         final String userId = getUid();
 

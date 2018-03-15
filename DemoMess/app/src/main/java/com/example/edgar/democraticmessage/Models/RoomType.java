@@ -5,10 +5,6 @@ import com.google.firebase.database.Exclude;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Edgar on 14/11/2017.
- */
-
 public class RoomType {
     public String roomname;
 
@@ -33,7 +29,7 @@ public class RoomType {
     public RoomType(String roomname, int budgettype,
                     int budgetlimit, int startingBudget,
                     String conferencetype, int participants,
-                    int currentParticipants, String password,
+                    String password,
                     String roomOwner) {
         this.roomname = roomname;
         this.budgettype = budgettype;
@@ -41,7 +37,7 @@ public class RoomType {
         this.startingBudget = startingBudget;
         this.conferencetype = conferencetype;
         this.participants = participants;
-        this.currentParticipants = currentParticipants;
+        this.currentParticipants = 0;
         this.password = password;
         this.roomOwner = roomOwner;
     }

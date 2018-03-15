@@ -5,10 +5,6 @@ import com.google.firebase.database.Exclude;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Edgar on 15/11/2017.
- */
-
 public class Participant {
     public String username;
     public String uID;
@@ -18,12 +14,12 @@ public class Participant {
 
     public Participant(){}
 
-    public Participant(String username, String uID, int budget, int timeUsed, String userRequest){
+    public Participant(String username, String uID, int budget){
         this.username = username;
         this.uID = uID;
         this.budget = budget;
-        this.timeUsed = timeUsed;
-        this.userRequest = userRequest;
+        this.timeUsed = 0;
+        this.userRequest = null;
     }
 
     @Exclude

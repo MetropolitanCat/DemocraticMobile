@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity {
                                 roomJoin("" + rKey.getText());
                             }
                             else{
-                                Participant part = new Participant(userName,userId, budgetShare, 0 , null);
+                                Participant part = new Participant(userName,userId, budgetShare);
                                 Map<String, Object> sendMessage = part.toMap();
                                 Map<String, Object> childUpdates = new HashMap<>();
                                 childUpdates.put( "/participants/" + "" + rKey.getText() + "/" + userId, sendMessage);
