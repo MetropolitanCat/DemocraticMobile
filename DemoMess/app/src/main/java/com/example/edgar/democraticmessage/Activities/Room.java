@@ -85,9 +85,23 @@ public class Room extends BaseActivity {
         public void onServiceConnected(ComponentName name, IBinder
                 service) {
             dataService = (UserData.DataBinder) service;
+            dataService.setRoomKey(roomData);
+            mDatabase.child("rooms").child(roomData).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    RoomType room = dataSnapshot.getValue(RoomType.class);
+                    dataService.setBudgetType(room.budgettype);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            Log.d("Service","" + dataService.getBudgetType());
             Log.d("Service","Service start");
             getUserInfo(true);
-            DatabaseReference notifInfo = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
+            DatabaseReference notifInfo = mDatabase.child("participants").child(roomData).child(getUid());
             notifInfo.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -180,7 +194,6 @@ public class Room extends BaseActivity {
                 Participant part = dataSnapshot.getValue(Participant.class);
                 if(set){
                     dataService.setTimeUsed(part.timeUsed);
-                    dataService.setRoomKey(roomData);
                 }
                 else {
                     roomInfo.child("timeUsed").setValue(dataService.getTimeUsed());
@@ -405,26 +418,32 @@ public class Room extends BaseActivity {
                         } else {
 
                             if(!dataService.getEmpty()){
-                            //Word counting function, from stack overflow
-                            String trimmed = message.trim();
-                            final int words = trimmed.isEmpty() ? 0 : trimmed.split("\\s+").length;
-                            Toast.makeText(Room.this, "Word count is " + words, Toast.LENGTH_SHORT).show();
+                                int talkCount = 0;
+                                String trimmed = message.trim();
+                                switch (dataService.getBudgetType()){
+                                    case "Word":
+                                        talkCount = trimmed.isEmpty() ? 0 : trimmed.split("\\s+").length;
+                                        break;
+                                    case "Character":
+                                        talkCount = trimmed.isEmpty() ? 0 : trimmed.replaceAll("\\s+","").length();
+                                        break;
+                                    default:
+                                        break;
+                                }
 
                             if(dataService.getBudget() > 0){
-                                dataService.setBudget(budgetCheck(dataService.getBudget(), words));
-                                dataService.setTimeUsed(words);
+                                dataService.setBudget(budgetCheck(dataService.getBudget(), talkCount));
+                                dataService.setTimeUsed(talkCount);
                                 getUserInfo(false);
                             }
 
-
-                                String key = mDatabase.child(roomKey).push().getKey();
-
-                                Message mess = new Message(user.username , message, words);
-                                Map<String, Object> sendMessage = mess.toMap();
-                                Map<String, Object> childUpdates = new HashMap<>();
-                                childUpdates.put(roomKey + key, sendMessage);
-                                mDatabase.updateChildren(childUpdates);
-                                messageBody.setText("");
+                            String key = mDatabase.child(roomKey).push().getKey();
+                            Message mess = new Message(user.username , message, talkCount);
+                            Map<String, Object> sendMessage = mess.toMap();
+                            Map<String, Object> childUpdates = new HashMap<>();
+                            childUpdates.put(roomKey + key, sendMessage);
+                            mDatabase.updateChildren(childUpdates);
+                            messageBody.setText("");
                             }
                         }
                     }

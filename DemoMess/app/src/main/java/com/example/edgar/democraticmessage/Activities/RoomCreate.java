@@ -13,7 +13,9 @@ import com.google.firebase.database.ValueEventListener;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -26,6 +28,8 @@ public class RoomCreate extends BaseActivity {
     private EditText roomBudget;
     private EditText roomPassword;
     private EditText roomParticipants;
+    private Spinner spinnerRoomType;
+    private Spinner spinnerBudgetType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,18 @@ public class RoomCreate extends BaseActivity {
         roomBudget = findViewById(R.id.roomBudget);
         roomPassword = findViewById(R.id.roomPass);
         roomParticipants = findViewById(R.id.roomPart);
+
+        spinnerRoomType = (Spinner) findViewById(R.id.spinnerRT);
+        ArrayAdapter<CharSequence> adapterRT = ArrayAdapter.createFromResource(this,
+                R.array.roomType, android.R.layout.simple_spinner_item);
+        adapterRT.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRoomType.setAdapter(adapterRT);
+
+        spinnerBudgetType = (Spinner) findViewById(R.id.spinnerBT);
+        ArrayAdapter<CharSequence> adapterBT = ArrayAdapter.createFromResource(this,
+                R.array.budgetType, android.R.layout.simple_spinner_item);
+        adapterBT.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBudgetType.setAdapter(adapterBT);
     }
 
     public void setupRoom(View v) {
@@ -45,8 +61,8 @@ public class RoomCreate extends BaseActivity {
         final String budget = roomBudget.getText().toString();
         final String password = roomPassword.getText().toString();
         final String participants = roomParticipants.getText().toString();
-        final int budgetType = 2;
-        final String conferenceType = "Basic";
+        final String budgetType = spinnerBudgetType.getSelectedItem().toString();
+        final String conferenceType = spinnerRoomType.getSelectedItem().toString();
         final int startingBudget = Integer.parseInt(budget) / Integer.parseInt(participants);
 
         if (TextUtils.isEmpty(name)) {
@@ -93,7 +109,7 @@ public class RoomCreate extends BaseActivity {
                 });
     }
 
-    private String createRoom(String name, int type,
+    private String createRoom(String name, String type,
                             int budget, int startBudget,
                             String conference, int participants,
                             String password){
@@ -110,9 +126,7 @@ public class RoomCreate extends BaseActivity {
 
     private void createMasterUser(final String roomKey, final int startBudget){
 
-        final DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference();
-
-        dataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -121,7 +135,7 @@ public class RoomCreate extends BaseActivity {
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put( "/participants/" + "" + roomKey + "/" + getUid(), sendMessage);
 
-            dataRef.updateChildren(childUpdates);
+                mDatabase.updateChildren(childUpdates);
 
             }
 

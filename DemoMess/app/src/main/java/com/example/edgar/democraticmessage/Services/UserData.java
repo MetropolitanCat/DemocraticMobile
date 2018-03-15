@@ -10,7 +10,7 @@ public class UserData extends Service {
     private final IBinder binder = new DataBinder();
 
     private int userBudget = 0;
-    private int userBudgetType = 0;
+    private String userBudgetType = "";
     private boolean noBudget = false;
     private int timeUsed = 0;
     private String roomKey = "";
@@ -29,9 +29,9 @@ public class UserData extends Service {
 
         public int getBudget() {return userBudget;}
 
-        public void setBudgetType(int type) {userBudgetType = type;}
+        public void setBudgetType(String type) {userBudgetType = type;}
 
-        public int getBudgetType() {return userBudgetType;}
+        public String getBudgetType() {return userBudgetType;}
 
         public void setEmpty(boolean empty){noBudget = empty;}
 

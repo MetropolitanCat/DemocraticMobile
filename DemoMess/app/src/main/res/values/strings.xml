@@ -8,4 +8,12 @@
     <string name="requestTitle">Request</string>
     <string name="requestMess">You have a request</string>
 
+    <string-array name="roomType">
+        <item>Basic</item>
+    </string-array>
+
+    <string-array name="budgetType">
+        <item>Word</item>
+        <item>Character</item>
+    </string-array>
 </resources>

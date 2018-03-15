@@ -8,13 +8,15 @@
     tools:layout_editor_absoluteY="81dp">
 
     <Button
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
         android:onClick="setupRoom"
         android:text="Setup"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/roomPart" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/roomPart"
@@ -23,39 +25,55 @@
         android:ems="10"
         android:hint="Number of participants"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/roomPass" />
+        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintStart_toStartOf="@+id/roomPass" />
 
     <EditText
         android:id="@+id/roomPass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="text"
-        app:layout_constraintStart_toStartOf="@+id/roomPart"
-        app:layout_constraintTop_toBottomOf="@+id/roomBudget" />
+        app:layout_constraintBottom_toTopOf="@+id/roomPart"
+        app:layout_constraintStart_toStartOf="@+id/roomBudget" />
 
     <EditText
         android:id="@+id/roomBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
         android:ems="10"
         android:hint="Budget Limit"
         android:inputType="number"
-        app:layout_constraintStart_toStartOf="@+id/messageName"
-        app:layout_constraintTop_toBottomOf="@+id/messageName" />
+        app:layout_constraintStart_toStartOf="@+id/spinnerBT"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerBT" />
 
     <EditText
         android:id="@+id/messageName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="202dp"
+        android:layout_marginTop="208dp"
         android:ems="10"
         android:hint="Room Name"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/roomPass" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerBT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/spinnerRT"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerRT" />
+
+    <Spinner
+        android:id="@+id/spinnerRT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/messageName"
+        app:layout_constraintTop_toBottomOf="@+id/messageName" />
 
 </android.support.constraint.ConstraintLayout>

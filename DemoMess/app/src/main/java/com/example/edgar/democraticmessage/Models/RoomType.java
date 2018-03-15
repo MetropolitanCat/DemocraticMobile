@@ -8,7 +8,7 @@ import java.util.Map;
 public class RoomType {
     public String roomname;
 
-    public int budgettype;
+    public String budgettype;
     public int budgetlimit;
 
     public String conferencetype;
@@ -26,7 +26,7 @@ public class RoomType {
     public RoomType() {
     }
 
-    public RoomType(String roomname, int budgettype,
+    public RoomType(String roomname, String budgettype,
                     int budgetlimit, int startingBudget,
                     String conferencetype, int participants,
                     String password,

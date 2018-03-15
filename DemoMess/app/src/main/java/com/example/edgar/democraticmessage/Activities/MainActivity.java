@@ -108,7 +108,6 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.child(userId).exists()){
-                                Toast.makeText(getApplicationContext(), "User exists!", Toast.LENGTH_SHORT).show();
                                 roomJoin("" + rKey.getText());
                             }
                             else{
