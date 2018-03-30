@@ -2,6 +2,10 @@
     <string name="app_name">Democratic Message</string>
     <string name="alertDeleteTitle">Delete current room?</string>
     <string name="alertDeleteMessage">Would you like to delete the room?</string>
+
+    <string name="alertLeaveTitle">Leave room?</string>
+    <string name="alertLeaveMessage">Would you like to leave the room, opening up your current spot?</string>
+
     <string name="alertYes">Yes</string>
     <string name="alertNo">No</string>
 
@@ -10,6 +14,7 @@
 
     <string-array name="roomType">
         <item>Basic</item>
+        <item>Blind Man</item>
     </string-array>
 
     <string-array name="budgetType">

@@ -9,6 +9,9 @@
         android:id="@+id/infoPart"
         android:title="View Participants" />
     <item
+        android:id="@+id/infoLeave"
+        android:title="Leave Room" />
+    <item
         android:id="@+id/infoDelete"
         android:title="Delete Room" />
     <item

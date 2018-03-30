@@ -91,6 +91,7 @@ public class Room extends BaseActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     RoomType room = dataSnapshot.getValue(RoomType.class);
                     dataService.setBudgetType(room.budgettype);
+                    dataService.setRoomType(room.conferencetype);
                 }
 
                 @Override
@@ -99,6 +100,7 @@ public class Room extends BaseActivity {
                 }
             });
             Log.d("Service","" + dataService.getBudgetType());
+            Log.d("Service","" + dataService.getRoomType());
             Log.d("Service","Service start");
             getUserInfo(true);
             DatabaseReference notifInfo = mDatabase.child("participants").child(roomData).child(getUid());
@@ -143,7 +145,7 @@ public class Room extends BaseActivity {
 
         pw.showAtLocation(layout,  Gravity.END , 0, 0);
 
-        final DatabaseReference reqView = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(getUid());
+        final DatabaseReference reqView = mDatabase.child("participants").child(roomData).child(getUid());
 
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,16 +173,18 @@ public class Room extends BaseActivity {
 
     private void getUserInfo(final boolean set){
         String userId = getUid();
-        final DatabaseReference roomInfo = FirebaseDatabase.getInstance().getReference().child("participants").child(roomData).child(userId);
+        final DatabaseReference roomInfo = mDatabase.child("participants").child(roomData).child(userId);
         roomInfo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Participant part = dataSnapshot.getValue(Participant.class);
-                if(set){
-                    dataService.setBudget(part.budget);
-                }
-                else {
-                    roomInfo.child("budget").setValue(dataService.getBudget());
+                if(!delete){
+                    if(set){
+                        dataService.setBudget(part.budget);
+                    }
+                    else {
+                        roomInfo.child("budget").setValue(dataService.getBudget());
+                    }
                 }
             }
 
@@ -219,7 +223,6 @@ public class Room extends BaseActivity {
         super.onDestroy();
         //Unbind the service when the activity is destroyed
         if(serviceConnection!=null) {
-
             if(!delete) getUserInfo(false);
             unbindService(serviceConnection);
             serviceConnection = null;
@@ -229,29 +232,9 @@ public class Room extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
-        //Update current participants in the room
-        DatabaseReference roomInfo = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomData);
-        roomInfo.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                RoomType tempRoom = dataSnapshot.getValue(RoomType.class);
-                if(tempRoom != null)change(tempRoom.currentParticipants -1, roomData);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
         // Clean up message listener
         mAdapter.cleanupListener();
     }
-
-    private void change(int val, String key){
-        DatabaseReference roomInfo = FirebaseDatabase.getInstance().getReference().child("rooms");
-        roomInfo.child(key).child("currentParticipants").setValue(val);
-    }
-
 
     private class MessageViewHolder extends RecyclerView.ViewHolder {
 
@@ -483,8 +466,7 @@ public class Room extends BaseActivity {
         builder.setPositiveButton(R.string.alertYes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                final DatabaseReference dataInfo = FirebaseDatabase.getInstance().getReference();
-                dataInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+               mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         RoomType room = dataSnapshot.child("rooms").child(roomData).getValue(RoomType.class);
@@ -493,11 +475,12 @@ public class Room extends BaseActivity {
                             Toast.makeText(Room.this,"Owner",Toast.LENGTH_SHORT).show();
 
                             if(room.currentParticipants <= 1){
+                                delete = true;
                                 dataSnapshot.child("rooms").child(roomData).getRef().removeValue();
                                 dataSnapshot.child("Message").child(roomData).getRef().removeValue();
                                 dataSnapshot.child("participants").child(roomData).getRef().removeValue();
-                                delete = true;
                                 finish();
+
                             }
                             else{
                                 Toast.makeText(Room.this,"There are still people in the room",Toast.LENGTH_SHORT).show();
@@ -506,6 +489,41 @@ public class Room extends BaseActivity {
                         else {
                             Toast.makeText(Room.this,"You are not the owner of the room",Toast.LENGTH_SHORT).show();
                         }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton(R.string.alertNo, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void leaveRoom(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.alertLeaveTitle);
+        builder.setMessage(R.string.alertLeaveMessage);
+        builder.setPositiveButton(R.string.alertYes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        RoomType tempRoom = dataSnapshot.child("rooms").child(roomData).getValue(RoomType.class);
+                        delete = true;
+                        DatabaseReference roomInfo = mDatabase.child("rooms");
+                        roomInfo.child(roomData).child("currentParticipants").setValue(tempRoom.currentParticipants -1);
+                        dataSnapshot.child("participants").child(roomData).child(getUid()).getRef().removeValue();
+                        finish();
                     }
 
                     @Override
@@ -536,6 +554,9 @@ public class Room extends BaseActivity {
                 Intent intent = new Intent(Room.this, StatisticScreen.class);
                 intent.putExtra("RoomKey",roomData);
                 startActivity(intent);
+                return true;
+            case R.id.infoLeave:
+                leaveRoom();
                 return true;
             case R.id.infoDelete:
                 deleteRoom();

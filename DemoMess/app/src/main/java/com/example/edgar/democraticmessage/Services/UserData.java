@@ -14,6 +14,7 @@ public class UserData extends Service {
     private boolean noBudget = false;
     private int timeUsed = 0;
     private String roomKey = "";
+    private String roomType = "";
 
     public UserData() {
     }
@@ -24,6 +25,10 @@ public class UserData extends Service {
         public IBinder asBinder() {
             return this;
         }
+
+        public void setRoomType(String type){roomType = type;}
+
+        public String getRoomType(){return roomType;}
 
         public void setBudget(int budget) {userBudget = budget;}
 

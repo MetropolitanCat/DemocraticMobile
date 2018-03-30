@@ -25,9 +25,10 @@ public class Request extends BaseActivity {
 
     private TextView reqRequestee;
     private TextView reqTalk;
+    private String reqTalkAmount = "";
     private TextView reqMyTalk;
     private EditText reqGiveTalk;
-    private  DatabaseReference data;
+    private DatabaseReference data;
 
     private UserData.DataBinder dataService = null;
 
@@ -57,8 +58,14 @@ public class Request extends BaseActivity {
                                         .child(partMe.userRequest)
                                         .getValue(Participant.class);
                reqRequestee.setText(partReq.username);
-               String talk = "" + partReq.budget;
-               reqTalk.setText(talk);
+               reqTalkAmount = "" + partReq.budget;
+                if(dataService.getRoomType().equals("Blind Man")){
+                    reqTalk.setText("?????");
+                }
+                else{
+                    reqTalk.setText(reqTalkAmount);
+                }
+
             }
 
             @Override
@@ -137,7 +144,7 @@ public class Request extends BaseActivity {
                         //Remove the request
                         data.child("participants").child(dataService.getRoomKey()).child(getUid()).child("userRequest").getRef().removeValue();
                         //Set the requestees new budget
-                        int reqGive = Integer.parseInt(reqTalk.getText().toString()) + amount;
+                        int reqGive = Integer.parseInt(reqTalkAmount) + amount;
                         data.child("participants").child(dataService.getRoomKey()).child(partMe.userRequest).child("budget").setValue(reqGive);
                         finish();
                     }

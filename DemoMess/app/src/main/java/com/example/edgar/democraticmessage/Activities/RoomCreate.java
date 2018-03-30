@@ -63,22 +63,19 @@ public class RoomCreate extends BaseActivity {
         final String participants = roomParticipants.getText().toString();
         final String budgetType = spinnerBudgetType.getSelectedItem().toString();
         final String conferenceType = spinnerRoomType.getSelectedItem().toString();
-        final int startingBudget = Integer.parseInt(budget) / Integer.parseInt(participants);
+        final int startingBudget = TextUtils.isEmpty(budget) ? 0 : Integer.parseInt(budget) / Integer.parseInt(participants);
 
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "You need to input a room name",Toast.LENGTH_SHORT).show();
-            return;
+            Toast.makeText(getApplicationContext(), "You need to input a room name",Toast.LENGTH_SHORT).show();
         }
-        if (TextUtils.isEmpty(budget)) {
-            Toast.makeText(this, "You need to input a budget",Toast.LENGTH_SHORT).show();
-            return;
+        else if (TextUtils.isEmpty(budget)) {
+            Toast.makeText(getApplicationContext(), "You need to input a budget",Toast.LENGTH_SHORT).show();
         }
-        if (TextUtils.isEmpty(participants)) {
-            Toast.makeText(this, "You need to input the amount of participants",Toast.LENGTH_SHORT).show();
-            return;
+        else if (TextUtils.isEmpty(participants)) {
+            Toast.makeText(getApplicationContext(), "You need to input the amount of participants",Toast.LENGTH_SHORT).show();
         }
-
-        final String userId = getUid();
+        else{
+            final String userId = getUid();
         mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -93,11 +90,11 @@ public class RoomCreate extends BaseActivity {
                             //The room key is obtained from the create room function
                             createMasterUser(
                                     createRoom(name,
-                                               budgetType,
-                                               Integer.parseInt(budget),
-                                               startingBudget,
-                                               conferenceType,
-                                               Integer.parseInt(participants), password), startingBudget);
+                                            budgetType,
+                                            Integer.parseInt(budget),
+                                            startingBudget,
+                                            conferenceType,
+                                            Integer.parseInt(participants), password), startingBudget);
                             //Leave activity
                             finish();
                         }
@@ -107,6 +104,8 @@ public class RoomCreate extends BaseActivity {
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+    }
+
     }
 
     private String createRoom(String name, String type,

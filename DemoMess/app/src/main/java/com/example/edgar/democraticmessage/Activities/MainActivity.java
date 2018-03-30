@@ -43,7 +43,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mRooms = FirebaseDatabase.getInstance().getReference().child("rooms");
 
         mCommentsRecycler = findViewById(R.id.recyclerView);
@@ -87,21 +86,7 @@ public class MainActivity extends BaseActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    //Check if room is full
-                    if(currentPart > (maxPart -1)){
-                        Toast.makeText(getApplicationContext(), "Room is full!!!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    DatabaseReference staticRooms = FirebaseDatabase.getInstance().getReference().child("rooms");
-
-                    currentPart +=1;
-
-                    staticRooms.child("" + rKey.getText()).child("currentParticipants").setValue(currentPart);
-
                     final DatabaseReference newParticipant = FirebaseDatabase.getInstance().getReference();
-
                     DatabaseReference roomUser = newParticipant.child("participants").child("" + rKey.getText());
 
                     roomUser.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -109,8 +94,20 @@ public class MainActivity extends BaseActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.child(userId).exists()){
                                 roomJoin("" + rKey.getText());
+
+
                             }
                             else{
+                                //Check if room is full
+                                if(currentPart > (maxPart -1)){
+                                    Toast.makeText(getApplicationContext(), "Room is full!!!", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                else{
+                                    currentPart +=1;
+                                    mRooms.child("" + rKey.getText()).child("currentParticipants").setValue(currentPart);
+                                }
+
                                 Participant part = new Participant(userName,userId, budgetShare);
                                 Map<String, Object> sendMessage = part.toMap();
                                 Map<String, Object> childUpdates = new HashMap<>();
