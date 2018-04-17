@@ -9,14 +9,14 @@ public class RoomType {
     public String roomname;
 
     public String budgettype;
-    public int budgetlimit;
+    private int budgetlimit;
 
     public String conferencetype;
 
     public int participants;
     public int currentParticipants;
 
-    public String password;
+    private String password;
 
     public String roomOwner;
 

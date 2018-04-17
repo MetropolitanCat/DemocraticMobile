@@ -26,8 +26,6 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
 
     private EditText mEmailField;
     private EditText mPasswordField;
-    private Button mSignInButton;
-    private Button mSignUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +38,8 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
         // Views
         mEmailField = findViewById(R.id.field_email);
         mPasswordField = findViewById(R.id.field_password);
-        mSignInButton = findViewById(R.id.button_sign_in);
-        mSignUpButton = findViewById(R.id.button_sign_up);
+        Button mSignInButton = findViewById(R.id.button_sign_in);
+        Button mSignUpButton = findViewById(R.id.button_sign_up);
 
 
         mSignInButton.setOnClickListener(this);

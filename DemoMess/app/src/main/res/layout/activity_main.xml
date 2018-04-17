@@ -16,7 +16,8 @@
         android:text="Create Room"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
+        android:layout_marginLeft="16dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

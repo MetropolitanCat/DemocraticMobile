@@ -22,11 +22,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class StatisticsUser extends BaseActivity {
 
-    private TextView userName;
     private TextView roomID;
     private TextView userTimeUsed;
     private String userID;
-    private Button userRequest;
     private String uBudget = "";
     private UserData.DataBinder dataService = null;
 
@@ -38,10 +36,10 @@ public class StatisticsUser extends BaseActivity {
         bindService(new Intent(this, UserData.class),
                 serviceConnection, Context.BIND_AUTO_CREATE);
 
-        userName = findViewById(R.id.userStatName);
+        TextView userName = findViewById(R.id.userStatName);
         roomID = findViewById(R.id.roomStatID);
         userTimeUsed = findViewById(R.id.userBudgetUsed);
-        userRequest = findViewById(R.id.requestButton);
+        Button userRequest = findViewById(R.id.requestButton);
 
         Intent intent = getIntent();
         userName.setText(intent.getStringExtra("userName"));

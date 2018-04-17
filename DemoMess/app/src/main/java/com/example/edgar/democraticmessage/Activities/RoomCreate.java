@@ -42,13 +42,13 @@ public class RoomCreate extends BaseActivity {
         roomPassword = findViewById(R.id.roomPass);
         roomParticipants = findViewById(R.id.roomPart);
 
-        spinnerRoomType = (Spinner) findViewById(R.id.spinnerRT);
+        spinnerRoomType = findViewById(R.id.spinnerRT);
         ArrayAdapter<CharSequence> adapterRT = ArrayAdapter.createFromResource(this,
                 R.array.roomType, android.R.layout.simple_spinner_item);
         adapterRT.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRoomType.setAdapter(adapterRT);
 
-        spinnerBudgetType = (Spinner) findViewById(R.id.spinnerBT);
+        spinnerBudgetType = findViewById(R.id.spinnerBT);
         ArrayAdapter<CharSequence> adapterBT = ArrayAdapter.createFromResource(this,
                 R.array.budgetType, android.R.layout.simple_spinner_item);
         adapterBT.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -112,6 +112,7 @@ public class RoomCreate extends BaseActivity {
                             int budget, int startBudget,
                             String conference, int participants,
                             String password){
+        //Create the room inside the database
         String key = mDatabase.child("rooms").push().getKey();
         RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, password, getUid());
         Map<String, Object> newRoom = room.toMap();
@@ -128,7 +129,7 @@ public class RoomCreate extends BaseActivity {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
+            //Create the master user, who has the power to delete the room
             Participant part = new Participant("Master: " + getUName(),getUid(), startBudget);
             Map<String, Object> sendMessage = part.toMap();
             Map<String, Object> childUpdates = new HashMap<>();

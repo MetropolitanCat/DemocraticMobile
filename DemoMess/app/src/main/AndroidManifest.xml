@@ -30,7 +30,7 @@
 
         <activity android:name=".Activities.StatisticScreen" />
         <activity android:name=".Activities.StatisticsUser" />
-        <activity android:name=".Activities.Request"></activity>
+        <activity android:name=".Activities.Request" />
     </application>
 
 </manifest>

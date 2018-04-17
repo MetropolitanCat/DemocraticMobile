@@ -16,7 +16,8 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/reqTitleFrom"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="31dp" />
 
     <TextView
         android:id="@+id/reqTitleFrom"
@@ -26,7 +27,8 @@
         android:layout_marginTop="60dp"
         android:text="Request from:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp" />
 
     <TextView
         android:id="@+id/reqTitleTalk"
@@ -45,7 +47,8 @@
         android:layout_marginTop="57dp"
         android:text="My Talk Amount:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reqTalk" />
+        app:layout_constraintTop_toBottomOf="@+id/reqTalk"
+        android:layout_marginLeft="16dp" />
 
     <TextView
         android:id="@+id/reqRequestee"
@@ -104,7 +107,8 @@
         android:onClick="reqAccept"
         android:text="Send"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="16dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -114,6 +118,7 @@
         android:onClick="reqDecline"
         android:text="Decline"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginRight="16dp" />
 
 </android.support.constraint.ConstraintLayout>

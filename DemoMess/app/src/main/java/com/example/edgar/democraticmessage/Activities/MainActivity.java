@@ -3,6 +3,7 @@ package com.example.edgar.democraticmessage.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,8 +34,8 @@ import java.util.Map;
 public class MainActivity extends BaseActivity {
 
     private DatabaseReference mRooms;
-    private RecyclerView mCommentsRecycler;
-    private RoomTypeAdapter mAdapter;
+    private RecyclerView mRoomView;
+    private RoomTypeAdapter mRoomAdapter;
     private static String userName;
     private static String userId;
 
@@ -42,11 +43,11 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //Get database refrence for the rooms in the database
         mRooms = FirebaseDatabase.getInstance().getReference().child("rooms");
-
-        mCommentsRecycler = findViewById(R.id.recyclerView);
-        mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        //Setup view to display all current rooms
+        mRoomView = findViewById(R.id.recyclerView);
+        mRoomView.setLayoutManager(new LinearLayoutManager(this));
 
         userName = getUName();
         userId = getUid();
@@ -55,30 +56,29 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onStart(){
         super.onStart();
-
-        mAdapter = new RoomTypeAdapter(this, mRooms);
-        mCommentsRecycler.setAdapter(mAdapter);
+        //Create and attach adapter to the room view
+        mRoomAdapter = new RoomTypeAdapter(this, mRooms);
+        mRoomView.setAdapter(mRoomAdapter);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         // Clean up room listener
-        mAdapter.cleanupListener();
+        mRoomAdapter.cleanupListener();
     }
 
     private class RoomTypeViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView rName;
-        private TextView rType;
-        private TextView rKey;
+        private final TextView rName;
+        private final TextView rType;
+        private final TextView rKey;
         private int maxPart;
         private int currentPart;
         private int budgetShare;
 
         private RoomTypeViewHolder(final View itemView) {
             super(itemView);
-
             rName = itemView.findViewById(R.id.roomName);
             rType = itemView.findViewById(R.id.roomType);
             rKey = itemView.findViewById(R.id.roomKey);
@@ -92,22 +92,24 @@ public class MainActivity extends BaseActivity {
                     roomUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Check if user is in the participant list
                             if(dataSnapshot.child(userId).exists()){
+                                //If they are, let the user join the room
                                 roomJoin("" + rKey.getText());
-
-
                             }
                             else{
-                                //Check if room is full
+                                //If user is not in the participant list, check to see if the participant list is full
                                 if(currentPart > (maxPart -1)){
+                                    //IF the list is full, do not allow the user to join
                                     Toast.makeText(getApplicationContext(), "Room is full!!!", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 else{
+                                    //If the list is not full, add the user to the participant list and let them join the room
                                     currentPart +=1;
                                     mRooms.child("" + rKey.getText()).child("currentParticipants").setValue(currentPart);
                                 }
-
+                                //Update participant list in the database
                                 Participant part = new Participant(userName,userId, budgetShare);
                                 Map<String, Object> sendMessage = part.toMap();
                                 Map<String, Object> childUpdates = new HashMap<>();
@@ -117,17 +119,15 @@ public class MainActivity extends BaseActivity {
                                 roomJoin("" + rKey.getText());
                             }
                         }
-
                         @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
+                        public void onCancelled(DatabaseError databaseError) {}
                     });
                 }
             });
         }
 
         private void roomJoin(String roomKey){
+            //Join the selected room
             Intent intent = new Intent(getApplicationContext(), Room.class);
             intent.putExtra("RoomKey",roomKey);
             startActivity(intent);
@@ -136,33 +136,28 @@ public class MainActivity extends BaseActivity {
 
     private class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeViewHolder> {
 
-        private Context mContext;
-        private DatabaseReference mDatabaseReference;
-        private ChildEventListener mChildEventListener;
+        private final Context mContext;
+        private final DatabaseReference mDatabaseReference;
+        private final ChildEventListener mChildEventListener;
 
-        private List<String> mRoomIds = new ArrayList<>();
-        private List<RoomType> mRooms = new ArrayList<>();
+        private final List<String> mRoomIds = new ArrayList<>();
+        private final List<RoomType> mRooms = new ArrayList<>();
 
         private RoomTypeAdapter(final Context context, DatabaseReference ref) {
             mContext = context;
             mDatabaseReference = ref;
 
             // Create child event listener
-            // [START child_event_listener_recycler]
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                     // A new room has been added, add it to the displayed list
                     RoomType tRoom = dataSnapshot.getValue(RoomType.class);
-
-                    // [START_EXCLUDE]
-                    // Update RecyclerView
+                    //Add the new room to the view
                     mRoomIds.add(dataSnapshot.getKey());
                     mRooms.add(tRoom);
-
                     Log.d("Room","Added Room");
                     notifyItemInserted(mRooms.size() - 1);
-                    // [END_EXCLUDE]
                 }
 
                 @Override
@@ -186,32 +181,20 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    // A room has changed, use the key to determine if we are displaying this
-                    // room and if so remove it.
+                    //Remove any rooms that have been deleted but are still being displayed
                     String roomKey = dataSnapshot.getKey();
-
-                    // [START_EXCLUDE]
                     int roomIndex = mRoomIds.indexOf(roomKey);
                     if (roomIndex > -1) {
                         // Remove data from the list
                         mRoomIds.remove(roomIndex);
                         mRooms.remove(roomIndex);
-
-                        // Update the RecyclerView
+                        // Update the room view
                         notifyItemRemoved(roomIndex);
                     }
-                    // [END_EXCLUDE]
                 }
 
                 @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-                    // A room has changed position, use the key to determine if we are
-                    // displaying this room and if so move it.
-                    RoomType roomMoved = dataSnapshot.getValue(RoomType.class);
-                    String roomKey = dataSnapshot.getKey();
-
-                    // ...
-                }
+                public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {                }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -220,21 +203,22 @@ public class MainActivity extends BaseActivity {
                 }
             };
             ref.addChildEventListener(childEventListener);
-            // [END child_event_listener_recycler]
 
             // Store reference to listener so it can be removed on app stop
             mChildEventListener = childEventListener;
         }
 
+        @NonNull
         @Override
-        public RoomTypeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RoomTypeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             View view = inflater.inflate(R.layout.room_thumb, parent, false);
             return new RoomTypeViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(RoomTypeViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RoomTypeViewHolder holder, int position) {
+            //Bind the data obtained from the database to the holder
             RoomType room = mRooms.get(position);
             holder.rName.setText(room.roomname);
             holder.rType.setText(room.conferencetype);
@@ -247,7 +231,6 @@ public class MainActivity extends BaseActivity {
         @Override
         public int getItemCount() {
             return mRooms.size();
-
         }
 
         private void cleanupListener() {
@@ -255,7 +238,6 @@ public class MainActivity extends BaseActivity {
                 mDatabaseReference.removeEventListener(mChildEventListener);
             }
         }
-
     }
 
     @Override
@@ -266,6 +248,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //Allow the user to logout
         int i = item.getItemId();
         if (i == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
@@ -279,7 +262,6 @@ public class MainActivity extends BaseActivity {
 
     public void createRoom(View v){
         Intent intent = new Intent(this, RoomCreate.class);
-
         startActivity(intent);
     }
 }

@@ -41,10 +41,10 @@ public class Request extends BaseActivity {
         reqTalk = findViewById(R.id.reqTalk);
         reqMyTalk = findViewById(R.id.reqMyTalk);
         reqGiveTalk = findViewById(R.id.reqGiveAmount);
-
+        //Bind user data service to the activity
         bindService(new Intent(this, UserData.class),
                 serviceConnection, Context.BIND_AUTO_CREATE);
-
+        //Obtain the participant data for the current user and the request target
         data = FirebaseDatabase.getInstance().getReference();
         data.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -53,11 +53,13 @@ public class Request extends BaseActivity {
                                     .child(dataService.getRoomKey())
                                     .child(getUid())
                                     .getValue(Participant.class);
-               Participant partReq = dataSnapshot.child("participants")
+                assert partMe != null;
+                Participant partReq = dataSnapshot.child("participants")
                                         .child(dataService.getRoomKey())
                                         .child(partMe.userRequest)
                                         .getValue(Participant.class);
-               reqRequestee.setText(partReq.username);
+                assert partReq != null;
+                reqRequestee.setText(partReq.username);
                reqTalkAmount = "" + partReq.budget;
                 if(dataService.getRoomType().equals("Blind Man")){
                     reqTalk.setText("?????");
@@ -79,6 +81,7 @@ public class Request extends BaseActivity {
 
     private ServiceConnection serviceConnection = new ServiceConnection()
     {
+        //Connect the service to the activity and obtain user data
         @Override
         public void onServiceConnected(ComponentName name, IBinder
                 service) {
@@ -102,6 +105,7 @@ public class Request extends BaseActivity {
     }
 
     public void reqDecline(View v){
+        //Remove request
         data.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -117,6 +121,7 @@ public class Request extends BaseActivity {
     }
 
     public void reqAccept(View v){
+        //Accept the request
         final int amount = reqGiveTalk.getText() != null ? Integer.parseInt(reqGiveTalk.getText().toString()) : 0;
         Log.d("Req","" + amount);
         if(amount <= 0){
@@ -145,6 +150,7 @@ public class Request extends BaseActivity {
                         data.child("participants").child(dataService.getRoomKey()).child(getUid()).child("userRequest").getRef().removeValue();
                         //Set the requestees new budget
                         int reqGive = Integer.parseInt(reqTalkAmount) + amount;
+                        assert partMe != null;
                         data.child("participants").child(dataService.getRoomKey()).child(partMe.userRequest).child("budget").setValue(reqGive);
                         finish();
                     }
