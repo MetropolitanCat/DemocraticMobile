@@ -364,7 +364,7 @@ public class Room extends BaseActivity {
         }
     }
 
-    public void sendMessage(View v){
+    public void sendMessage(@SuppressWarnings("unused") View v){
 
         final String message = messageBody.getText().toString();
         // Title is required

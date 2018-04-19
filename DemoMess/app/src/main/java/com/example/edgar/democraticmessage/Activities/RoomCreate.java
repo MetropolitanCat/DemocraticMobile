@@ -55,7 +55,7 @@ public class RoomCreate extends BaseActivity {
         spinnerBudgetType.setAdapter(adapterBT);
     }
 
-    public void setupRoom(View v) {
+    public void setupRoom(@SuppressWarnings("unused") View v) {
 
         final String name = roomName.getText().toString();
         final String budget = roomBudget.getText().toString();
@@ -84,7 +84,8 @@ public class RoomCreate extends BaseActivity {
                         User user = dataSnapshot.getValue(User.class);
 
                         if (user == null) {
-                            // User is null, error out
+                            Toast.makeText(getBaseContext(), "An Error has occured", Toast.LENGTH_LONG).show();
+                            finish();
                         } else {
                             //Create the master user who has the ability to delete the room
                             //The room key is obtained from the create room function

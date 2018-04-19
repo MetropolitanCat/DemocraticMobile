@@ -52,7 +52,6 @@ public class StatisticScreen extends BaseActivity {
     @Override
     public void onStart(){
         super.onStart();
-
         userAdapter = new UserListAdapter(this, users);
         userRecycler.setAdapter(userAdapter);
     }
@@ -60,7 +59,6 @@ public class StatisticScreen extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
-        // Clean up room listener
         userAdapter.cleanupListener();
     }
 
@@ -161,6 +159,7 @@ public class StatisticScreen extends BaseActivity {
 
         @Override
         public void onBindViewHolder(@NonNull UserListHolder holder, int position) {
+            //Link the participant data to the holder variables
             Participant part = mUsers.get(position);
             holder.uName.setText(part.username);
             holder.userName = part.username;

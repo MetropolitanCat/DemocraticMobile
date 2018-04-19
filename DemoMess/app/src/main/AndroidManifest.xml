@@ -26,7 +26,7 @@
             android:name=".Services.UserData"
             android:enabled="true"
             android:exported="true"
-            android:permission="" />
+            android:permission="true" />
 
         <activity android:name=".Activities.StatisticScreen" />
         <activity android:name=".Activities.StatisticsUser" />

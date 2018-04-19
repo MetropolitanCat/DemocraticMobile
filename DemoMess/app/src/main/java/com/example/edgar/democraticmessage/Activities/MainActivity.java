@@ -260,7 +260,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void createRoom(View v){
+    public void createRoom(@SuppressWarnings("unused") View v){
         Intent intent = new Intent(this, RoomCreate.class);
         startActivity(intent);
     }

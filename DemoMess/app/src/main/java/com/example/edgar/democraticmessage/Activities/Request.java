@@ -104,7 +104,7 @@ public class Request extends BaseActivity {
         }
     }
 
-    public void reqDecline(View v){
+    public void reqDecline(@SuppressWarnings("unused") View v){
         //Remove request
         data.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -120,7 +120,7 @@ public class Request extends BaseActivity {
         });
     }
 
-    public void reqAccept(View v){
+    public void reqAccept(@SuppressWarnings("unused") View v){
         //Accept the request
         final int amount = reqGiveTalk.getText() != null ? Integer.parseInt(reqGiveTalk.getText().toString()) : 0;
         Log.d("Req","" + amount);

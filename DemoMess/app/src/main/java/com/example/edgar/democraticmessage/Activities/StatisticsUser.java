@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,14 +31,13 @@ public class StatisticsUser extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics_user);
-
+        //Bind the running user service in order to obtain data
         bindService(new Intent(this, UserData.class),
                 serviceConnection, Context.BIND_AUTO_CREATE);
 
         TextView userName = findViewById(R.id.userStatName);
         roomID = findViewById(R.id.roomStatID);
         userTimeUsed = findViewById(R.id.userBudgetUsed);
-        Button userRequest = findViewById(R.id.requestButton);
 
         Intent intent = getIntent();
         userName.setText(intent.getStringExtra("userName"));
@@ -54,6 +52,7 @@ public class StatisticsUser extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder
                 service) {
+            //If the room type is blind man, hide the users time used
             dataService = (UserData.DataBinder) service;
             if(dataService.getRoomType().equals("Blind Man") )
                 userTimeUsed.setText("???????");
@@ -75,10 +74,10 @@ public class StatisticsUser extends BaseActivity {
         }
     }
 
-    public void request(View v){
+    public void request(@SuppressWarnings("unused") View v){
         final DatabaseReference newParticipant = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference roomUser = newParticipant.child("participants").child("" + roomID.getText()).child(userID);
-
+        //Send a request to the target user
         roomUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
