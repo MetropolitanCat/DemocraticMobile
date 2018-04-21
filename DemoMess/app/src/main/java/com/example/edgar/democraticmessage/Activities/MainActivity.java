@@ -43,7 +43,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Get database refrence for the rooms in the database
+        //Get database reference for the rooms in the database
         mRooms = FirebaseDatabase.getInstance().getReference().child("rooms");
         //Setup view to display all current rooms
         mRoomView = findViewById(R.id.recyclerView);
@@ -162,21 +162,15 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                    // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so displayed the changed comment.
                     RoomType newRoom = dataSnapshot.getValue(RoomType.class);
-                    String commentKey = dataSnapshot.getKey();
+                    String roomID = dataSnapshot.getKey();
 
-                    // [START_EXCLUDE]
-                    int commentIndex = mRoomIds.indexOf(commentKey);
-                    if (commentIndex > -1) {
-                        // Replace with the new data
-                        mRooms.set(commentIndex, newRoom);
+                    int roomIndex = mRoomIds.indexOf(roomID);
+                    if (roomIndex > -1) {
+                        mRooms.set(roomIndex, newRoom);
 
-                        // Update the RecyclerView
-                        notifyItemChanged(commentIndex);
+                        notifyItemChanged(roomIndex);
                     }
-                    // [END_EXCLUDE]
                 }
 
                 @Override
