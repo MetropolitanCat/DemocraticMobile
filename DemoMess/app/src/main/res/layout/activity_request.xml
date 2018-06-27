@@ -5,120 +5,154 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.edgar.democraticmessage.Activities.Request"
-    tools:layout_editor_absoluteY="81dp">
+    tools:layout_editor_absoluteY="89dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="16dp"
-        android:text="Request"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/reqTitleFrom"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="31dp" />
-
-    <TextView
-        android:id="@+id/reqTitleFrom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
-        android:text="Request from:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="16dp" />
-
-    <TextView
-        android:id="@+id/reqTitleTalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Talk Amount:"
-        app:layout_constraintStart_toStartOf="@+id/reqRequestee"
-        app:layout_constraintTop_toTopOf="@+id/reqRequestee" />
-
-    <TextView
-        android:id="@+id/reqTitleMyTalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="57dp"
-        android:text="My Talk Amount:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reqTalk"
-        android:layout_marginLeft="16dp" />
-
-    <TextView
-        android:id="@+id/reqRequestee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="18sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="@+id/reqTitleFrom"
-        app:layout_constraintTop_toBottomOf="@+id/reqTitleFrom" />
-
-    <TextView
-        android:id="@+id/reqTalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="18sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="@+id/reqTitleTalk"
-        app:layout_constraintTop_toBottomOf="@+id/reqTitleTalk" />
-
-    <TextView
-        android:id="@+id/reqMyTalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="18sp"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="@+id/reqTitleMyTalk"
-        app:layout_constraintTop_toBottomOf="@+id/reqTitleMyTalk" />
-
-    <TextView
-        android:id="@+id/reqTitleGive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Talk To Give:"
-        app:layout_constraintStart_toStartOf="@+id/reqMyTalk"
-        app:layout_constraintTop_toTopOf="@+id/reqMyTalk" />
-
-    <EditText
-        android:id="@+id/reqGiveAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Input Talk Amount"
-        android:inputType="number"
-        app:layout_constraintStart_toStartOf="@+id/reqTitleGive"
-        app:layout_constraintTop_toBottomOf="@+id/reqTitleGive" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"
-        android:onClick="reqAccept"
-        android:text="Send"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="16dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
-        android:onClick="reqDecline"
-        android:text="Decline"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginRight="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Request"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="138dp"
+            tools:layout_editor_absoluteY="15dp" />
+
+        <TextView
+            android:id="@+id/reqTitleFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Request from:"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="60dp" />
+
+        <TextView
+            android:id="@+id/reqFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="22sp"
+            android:textStyle="italic"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="80dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/reqTitleTalkFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Talk Amount:"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="104dp" />
+
+        <TextView
+            android:id="@+id/reqTalkFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="22sp"
+            android:textStyle="italic"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="122dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/reqTitleMyBudget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="My Talk Amount:"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="202dp" />
+
+        <TextView
+            android:id="@+id/reqMyTalk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="22sp"
+            android:textStyle="italic"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="222dp" />
+
+        <TextView
+            android:id="@+id/reqFiller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/reqTitleGive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Talk To Give:"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="246dp" />
+
+        <EditText
+            android:id="@+id/reqGiveAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Input Talk Amount"
+            android:inputType="number"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="264dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="reqDecline"
+            android:text="Decline"
+            tools:layout_editor_absoluteX="137dp"
+            tools:layout_editor_absoluteY="338dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="reqAccept"
+            android:text="Send"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="314dp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

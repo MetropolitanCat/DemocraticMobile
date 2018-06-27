@@ -10,7 +10,11 @@ public class Participant {
     public String uID;
     public int budget;
     public int timeUsed;
+    public int reqUsed;
+    public int donUsed;
     public String userRequest;
+    public String userDonate;
+
 
     public Participant(){}
 
@@ -19,7 +23,10 @@ public class Participant {
         this.uID = uID;
         this.budget = budget;
         this.timeUsed = 0;
+        this.reqUsed = 0;
+        this.donUsed = 0;
         this.userRequest = null;
+        this.userDonate = null;
     }
 
     @Exclude
@@ -29,7 +36,10 @@ public class Participant {
         result.put("uID", uID);
         result.put("budget", budget);
         result.put("timeUsed", timeUsed);
+        result.put("reqUsed", reqUsed);
+        result.put("donUsed", donUsed);
         result.put("userRequest", userRequest);
+        result.put("userDonate", userDonate);
 
         return result;
     }

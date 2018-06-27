@@ -37,7 +37,7 @@ public class RoomType {
         this.startingBudget = startingBudget;
         this.conferencetype = conferencetype;
         this.participants = participants;
-        this.currentParticipants = 0;
+        this.currentParticipants = 1;
         this.password = password;
         this.roomOwner = roomOwner;
     }

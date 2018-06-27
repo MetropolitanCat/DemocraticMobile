@@ -53,26 +53,60 @@ public class RoomCreate extends BaseActivity {
                 R.array.budgetType, android.R.layout.simple_spinner_item);
         adapterBT.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBudgetType.setAdapter(adapterBT);
+        //Create master Toast for the activity
+        masterToast= Toast.makeText(this, "", Toast.LENGTH_SHORT);
+    }
+
+    private int budgetCalc(int budget, int participants){
+        //Make sure the budget and participants set are not 0
+        if(budget == 0){
+            return -1;
+        }
+        else if(participants == 0 ){
+            return -2;
+        }
+        //Make sure that the budget can be equally divided among the participants
+        else if(budget % participants != 0 ){
+            return -3;
+        }
+        else{
+            return  budget / participants;
+        }
     }
 
     public void setupRoom(@SuppressWarnings("unused") View v) {
-
+        //Obtain input from all the inputs
         final String name = roomName.getText().toString();
         final String budget = roomBudget.getText().toString();
         final String password = roomPassword.getText().toString();
         final String participants = roomParticipants.getText().toString();
         final String budgetType = spinnerBudgetType.getSelectedItem().toString();
         final String conferenceType = spinnerRoomType.getSelectedItem().toString();
-        final int startingBudget = TextUtils.isEmpty(budget) ? 0 : Integer.parseInt(budget) / Integer.parseInt(participants);
+        //Send the obtained budget and participant numbers to the budget calc function
+        final int startingBudget = budgetCalc(
+                                            //If either budget or participants are empty, set them 0, otherwise parse the value input
+                                            TextUtils.isEmpty(budget) ? 0 : Integer.parseInt(budget),
+                                            TextUtils.isEmpty(participants) ? 0 :Integer.parseInt(participants));
 
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(getApplicationContext(), "You need to input a room name",Toast.LENGTH_SHORT).show();
+            //Warn the user if a name for the room is not set
+            masterToast.setText("You need to input a room name");
+            masterToast.show();
         }
-        else if (TextUtils.isEmpty(budget)) {
-            Toast.makeText(getApplicationContext(), "You need to input a budget",Toast.LENGTH_SHORT).show();
+        else if(startingBudget == -1){
+            //Warn the user if the budget is not set or is 0
+            masterToast.setText("You need to input a budget");
+            masterToast.show();
         }
-        else if (TextUtils.isEmpty(participants)) {
-            Toast.makeText(getApplicationContext(), "You need to input the amount of participants",Toast.LENGTH_SHORT).show();
+        else if(startingBudget == -2){
+            //Warn the user if the participants are not set or are 0
+            masterToast.setText("You need to input the amount of participants");
+            masterToast.show();
+        }
+        else if(startingBudget == -3){
+            //Warn the user that the budget cant be equally divided between the participants
+            masterToast.setText("Stating budget not a whole number");
+            masterToast.show();
         }
         else{
             final String userId = getUid();
@@ -84,7 +118,8 @@ public class RoomCreate extends BaseActivity {
                         User user = dataSnapshot.getValue(User.class);
 
                         if (user == null) {
-                            Toast.makeText(getBaseContext(), "An Error has occured", Toast.LENGTH_LONG).show();
+                            masterToast.setText("Could not fetch user");
+                            masterToast.show();
                             finish();
                         } else {
                             //Create the master user who has the ability to delete the room

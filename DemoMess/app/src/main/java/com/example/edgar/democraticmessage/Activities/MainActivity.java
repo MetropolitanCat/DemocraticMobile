@@ -2,7 +2,9 @@ package com.example.edgar.democraticmessage.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,11 +41,13 @@ public class MainActivity extends BaseActivity {
     private static String userName;
     private static String userId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Get database reference for the rooms in the database
+
+        //Get database reference for the rooms table in the database
         mRooms = FirebaseDatabase.getInstance().getReference().child("rooms");
         //Setup view to display all current rooms
         mRoomView = findViewById(R.id.recyclerView);
@@ -51,6 +55,8 @@ public class MainActivity extends BaseActivity {
 
         userName = getUName();
         userId = getUid();
+        //Initialize the master Toast for the activity
+        masterToast= Toast.makeText(this, "", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -95,28 +101,30 @@ public class MainActivity extends BaseActivity {
                             //Check if user is in the participant list
                             if(dataSnapshot.child(userId).exists()){
                                 //If they are, let the user join the room
-                                roomJoin("" + rKey.getText());
+                                roomJoin("" + rKey.getText(), "" + rName.getText());
                             }
-                            else{
+                            else {
                                 //If user is not in the participant list, check to see if the participant list is full
-                                if(currentPart > (maxPart -1)){
+                                if (currentPart > (maxPart - 1)) {
                                     //IF the list is full, do not allow the user to join
-                                    Toast.makeText(getApplicationContext(), "Room is full!!!", Toast.LENGTH_SHORT).show();
+                                    masterToast.setText("Room is full!!!");
+                                    masterToast.show();
                                     return;
-                                }
-                                else{
+                                } else {
                                     //If the list is not full, add the user to the participant list and let them join the room
-                                    currentPart +=1;
+                                    currentPart += 1;
                                     mRooms.child("" + rKey.getText()).child("currentParticipants").setValue(currentPart);
-                                }
-                                //Update participant list in the database
-                                Participant part = new Participant(userName,userId, budgetShare);
-                                Map<String, Object> sendMessage = part.toMap();
-                                Map<String, Object> childUpdates = new HashMap<>();
-                                childUpdates.put( "/participants/" + "" + rKey.getText() + "/" + userId, sendMessage);
 
-                                newParticipant.updateChildren(childUpdates);
-                                roomJoin("" + rKey.getText());
+                                    //Update participant list in the database
+                                    Participant part = new Participant(userName, userId, budgetShare);
+                                    Map<String, Object> sendMessage = part.toMap();
+                                    Map<String, Object> childUpdates = new HashMap<>();
+                                    childUpdates.put("/participants/" + "" + rKey.getText() + "/" + userId, sendMessage);
+                                    newParticipant.updateChildren(childUpdates);
+                                    masterToast.setText("Joining room");
+                                    masterToast.show();
+                                }
+                                roomJoin("" + rKey.getText(), "" + rName.getText());
                             }
                         }
                         @Override
@@ -126,10 +134,13 @@ public class MainActivity extends BaseActivity {
             });
         }
 
-        private void roomJoin(String roomKey){
+        private void roomJoin(String roomKey, String roomName){
             //Join the selected room
             Intent intent = new Intent(getApplicationContext(), Room.class);
+            //Send the roomkey to the Room activity
             intent.putExtra("RoomKey",roomKey);
+            intent.putExtra("RoomName",roomName);
+            clickVibrate();
             startActivity(intent);
         }
     }
@@ -147,7 +158,7 @@ public class MainActivity extends BaseActivity {
             mContext = context;
             mDatabaseReference = ref;
 
-            // Create child event listener
+            //Create child listener in order to add rooms to the view
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -164,7 +175,7 @@ public class MainActivity extends BaseActivity {
                 public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                     RoomType newRoom = dataSnapshot.getValue(RoomType.class);
                     String roomID = dataSnapshot.getKey();
-
+                    //Make changes to the correct room in the view
                     int roomIndex = mRoomIds.indexOf(roomID);
                     if (roomIndex > -1) {
                         mRooms.set(roomIndex, newRoom);
@@ -182,7 +193,7 @@ public class MainActivity extends BaseActivity {
                         // Remove data from the list
                         mRoomIds.remove(roomIndex);
                         mRooms.remove(roomIndex);
-                        // Update the room view
+
                         notifyItemRemoved(roomIndex);
                     }
                 }
@@ -192,8 +203,6 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(mContext, "Failed to load rooms.",
-                            Toast.LENGTH_SHORT).show();
                 }
             };
             ref.addChildEventListener(childEventListener);
@@ -236,6 +245,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Create menu inside the activity
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
@@ -246,6 +256,7 @@ public class MainActivity extends BaseActivity {
         int i = item.getItemId();
         if (i == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
+            clickVibrate();
             startActivity(new Intent(this, UserSignInUp.class));
             finish();
             return true;
@@ -255,7 +266,9 @@ public class MainActivity extends BaseActivity {
     }
 
     public void createRoom(@SuppressWarnings("unused") View v){
+        //Go to the RoomCreate activity
         Intent intent = new Intent(this, RoomCreate.class);
+        clickVibrate();
         startActivity(intent);
     }
 }

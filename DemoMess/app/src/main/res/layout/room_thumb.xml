@@ -14,12 +14,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginLeft="10dp"
-        android:padding="5dp"
-        android:layout_toRightOf="@+id/comment_photo"
         android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/comment_photo">
+        android:layout_toEndOf="@+id/comment_photo"
+        android:layout_toRightOf="@+id/comment_photo"
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/roomKey"
@@ -41,6 +41,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Room Type" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:visibility="invisible" />
 
     </LinearLayout>
 

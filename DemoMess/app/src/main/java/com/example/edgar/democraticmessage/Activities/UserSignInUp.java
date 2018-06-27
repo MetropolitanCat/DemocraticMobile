@@ -31,10 +31,9 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_sign_in_up);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-
+        populateUsers();
         mEmailField = findViewById(R.id.field_email);
         mPasswordField = findViewById(R.id.field_password);
         Button mSignInButton = findViewById(R.id.button_sign_in);
@@ -42,6 +41,8 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
 
         mSignInButton.setOnClickListener(this);
         mSignUpButton.setOnClickListener(this);
+        //Initialise master Toast for the activity
+        masterToast= Toast.makeText(this, "", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -53,6 +54,7 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
     }
 
     private void signIn() {
+        clickVibrate();
         if (!validateForm()) {
             return;
         }
@@ -65,18 +67,18 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
-                            Toast.makeText(UserSignInUp.this, "Sign In Failed",
-                                    Toast.LENGTH_SHORT).show();
+                            masterToast.setText("Sign In Failed");
+                            masterToast.show();
                         }
                     }
                 });
     }
 
     private void signUp() {
+        clickVibrate();
         if (!validateForm()) {
             return;
         }
@@ -91,8 +93,8 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             onAuthSuccess(task.getResult().getUser());
                         } else {
-                            Toast.makeText(UserSignInUp.this, "Sign Up Failed",
-                                    Toast.LENGTH_SHORT).show();
+                            masterToast.setText("Sign Up Failed");
+                            masterToast.show();
                         }
                     }
                 });
@@ -136,7 +138,7 @@ public class UserSignInUp extends BaseActivity implements View.OnClickListener {
 
     private void writeNewUser(String userId, String name, String email) {
         User user = new User(name, email);
-
+        //Add user into the database
         mDatabase.child("users").child(userId).setValue(user);
     }
 
