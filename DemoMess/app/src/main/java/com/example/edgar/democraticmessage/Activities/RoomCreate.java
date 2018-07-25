@@ -26,6 +26,7 @@ public class RoomCreate extends BaseActivity {
     private DatabaseReference mDatabase;
     private EditText roomName;
     private EditText roomBudget;
+    private EditText roomClassSpec;
     private EditText roomPassword;
     private EditText roomParticipants;
     private Spinner spinnerRoomType;
@@ -39,6 +40,7 @@ public class RoomCreate extends BaseActivity {
 
         roomName = findViewById(R.id.messageName);
         roomBudget = findViewById(R.id.roomBudget);
+        roomClassSpec = findViewById(R.id.roomClassSpec);
         roomPassword = findViewById(R.id.roomPass);
         roomParticipants = findViewById(R.id.roomPart);
 
@@ -78,6 +80,7 @@ public class RoomCreate extends BaseActivity {
         //Obtain input from all the inputs
         final String name = roomName.getText().toString();
         final String budget = roomBudget.getText().toString();
+        final String classSpec = TextUtils.isEmpty(roomClassSpec.getText().toString()) ? "0" : roomClassSpec.getText().toString();
         final String password = roomPassword.getText().toString();
         final String participants = roomParticipants.getText().toString();
         final String budgetType = spinnerBudgetType.getSelectedItem().toString();
@@ -130,7 +133,8 @@ public class RoomCreate extends BaseActivity {
                                             Integer.parseInt(budget),
                                             startingBudget,
                                             conferenceType,
-                                            Integer.parseInt(participants), password), startingBudget);
+                                            Integer.parseInt(participants), password, Integer.parseInt(classSpec)), startingBudget
+                                            );
                             //Leave activity
                             finish();
                         }
@@ -147,10 +151,10 @@ public class RoomCreate extends BaseActivity {
     private String createRoom(String name, String type,
                             int budget, int startBudget,
                             String conference, int participants,
-                            String password){
+                            String password, int classSpec){
         //Create the room inside the database
         String key = mDatabase.child("rooms").push().getKey();
-        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, password, getUid());
+        RoomType room = new RoomType(name, type, budget, startBudget, conference, participants, password, getUid(), classSpec);
         Map<String, Object> newRoom = room.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

@@ -37,11 +37,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Donating to:"
+                android:gravity="right"
+                android:text="Donating to: "
                 tools:layout_editor_absoluteX="151dp"
                 tools:layout_editor_absoluteY="76dp" />
 
@@ -53,7 +53,16 @@
                 android:text="TextView"
                 android:textSize="22sp"
                 android:textStyle="italic" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,11 +70,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView5"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Target's budget" />
+                android:gravity="right"
+                android:text="Target's Budget: " />
 
             <TextView
                 android:id="@+id/donBudget"
@@ -78,38 +87,54 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/donTitleMyBudget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="57dp"
-            android:text="My Budget:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reqTalkFrom" />
-
-        <TextView
-            android:id="@+id/donMyBudget"
-            android:layout_width="wrap_content"
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textSize="22sp"
-            android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="@+id/reqTitleFrom"
-            app:layout_constraintTop_toBottomOf="@+id/reqTitleFrom" />
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="My Budget: "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/reqTalkFrom" />
+
+            <TextView
+                android:id="@+id/donMyBudget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView"
+                android:textSize="22sp"
+                android:textStyle="italic"
+                app:layout_constraintStart_toStartOf="@+id/reqTitleFrom"
+                app:layout_constraintTop_toBottomOf="@+id/reqTitleFrom" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/donTitleGive"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:gravity="center"
             android:text="Budget To Give:"
             app:layout_constraintStart_toStartOf="@+id/reqMyTalk"
             app:layout_constraintTop_toTopOf="@+id/reqMyTalk" />
 
         <EditText
             android:id="@+id/donGiveAmount"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:textAlignment="center"
             android:hint="Input Talk Amount"
             android:inputType="number"
             app:layout_constraintStart_toStartOf="@+id/reqTitleGive"
@@ -130,7 +155,6 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
         <Button
-            android:id="@+id/donSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -139,7 +163,6 @@
             android:visibility="visible" />
 
         <Button
-            android:id="@+id/donCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

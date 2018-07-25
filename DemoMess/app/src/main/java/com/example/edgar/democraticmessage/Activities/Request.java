@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -123,7 +122,6 @@ public class Request extends BaseActivity {
         //Accept the request
         clickVibrate();
         int amount =  TextUtils.isEmpty(reqGiveTalk.getText().toString()) ? 0 : Integer.parseInt(reqGiveTalk.getText().toString());
-        Log.d("Req","" + amount);
         if(amount <= 0){
             //If no amount is selected, warn the user
             masterToast.setText("Enter amount of talk to give!");
@@ -150,11 +148,9 @@ public class Request extends BaseActivity {
                 int reqGive = Integer.parseInt(reqTalkAmount) + amount;
                 //Set the requestees new budget
                 data.child("participants").child(dataService.getRoomKey()).child(reqUser).child("budget").setValue(reqGive);
-                Log.d("Request", "Set target budget");
 
                 //Set your new budget
                 data.child("participants").child(dataService.getRoomKey()).child(getUid()).child("budget").setValue(dataService.getBudget());
-                Log.d("Request", "Set new budget");
 
                 finish();
             }
@@ -177,7 +173,6 @@ public class Request extends BaseActivity {
                 break;
         }
         data.child("Message").child(dataService.getRoomKey()).child(mRef).child("privMess").setValue(flagVal);
-        Log.d("Request", "Remove flag");
     }
 
 }

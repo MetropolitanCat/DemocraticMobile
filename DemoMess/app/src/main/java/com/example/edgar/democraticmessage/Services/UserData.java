@@ -5,18 +5,8 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.IInterface;
-import android.util.Log;
 
 import com.example.edgar.democraticmessage.Activities.BaseActivity;
-import com.example.edgar.democraticmessage.Models.User;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserData extends Service {
     private final IBinder binder = new DataBinder();
@@ -29,6 +19,7 @@ public class UserData extends Service {
     private int donUsed = 0;
     private String roomKey = "";
     private String roomType = "";
+    private int roomClass = 0;
 
     public UserData() {
     }
@@ -76,17 +67,16 @@ public class UserData extends Service {
         public void setRoomKey(String key){roomKey = key;}
         //Getter for the room id
         public String getRoomKey() {return roomKey;}
+        //Setter for room class
+        public void setClassType(int type){roomClass = type;}
+        //Getter for room class
+        public int getClassType(){return roomClass;}
         //Exchange ID's for Username
         public String idToName(String id){
-            Log.d("Base","Size in conversion " + BaseActivity.nameIds.size());
             String temp = "";
             for(int i = 0; i < BaseActivity.nameIds.size(); i++){
-                Log.d("UserData","name id " + BaseActivity.nameIds.get(i));
-                Log.d("UserData","string id " + id);
-
                 if(BaseActivity.nameIds.get(i).equals(id)){
                     temp = BaseActivity.name.get(i).username;
-                    Log.d("UserData", "MATCH!!!! " + temp);
                     break;
                 }
             }

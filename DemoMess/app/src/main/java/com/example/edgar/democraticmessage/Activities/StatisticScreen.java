@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,7 @@ public class StatisticScreen extends BaseActivity {
     private RecyclerView userRecycler;
     private UserListAdapter userAdapter;
     private String roomKey;
+    private int roomClass;
 
     private final List<String> requestIds = new ArrayList<>();
     private final List<Message> request = new ArrayList<>();
@@ -50,6 +50,7 @@ public class StatisticScreen extends BaseActivity {
 
         Intent intent = getIntent();
         roomKey = intent.getStringExtra("RoomKey");
+        roomClass = intent.getIntExtra("roomClass",0);
 
         mainData = FirebaseDatabase.getInstance().getReference();
         users = mainData.child("participants").child(roomKey);
@@ -64,7 +65,6 @@ public class StatisticScreen extends BaseActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Message message = dataSnapshot.getValue(Message.class);
-                Log.d("StatScreen","" + message.privMess);
                 assert message != null;
                 if(message.privMess == 1){
                     if(message.uID.equals(getUid())){
@@ -130,29 +130,31 @@ public class StatisticScreen extends BaseActivity {
             butDon = itemView.findViewById(R.id.buttDon);
             butReq = itemView.findViewById(R.id.buttReq);
 
-            butReq.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickVibrate();
-                    if(uID.equals(getUid())){
-                        masterToast.setText("You cannot send a request to yourself!");
-                        masterToast.show();
+            if(roomClass == 0){
+                butReq.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickVibrate();
+                        if(uID.equals(getUid())){
+                            masterToast.setText("You cannot send a request to yourself!");
+                            masterToast.show();
+                        }
+                        else request(uID);
                     }
-                    else request(uID);
-                }
-            });
+                });
 
-            butDon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickVibrate();
-                    if(uID.equals(getUid())){
-                        masterToast.setText("You cannot donate budget to yourself!");
-                        masterToast.show();
+                butDon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickVibrate();
+                        if(uID.equals(getUid())){
+                            masterToast.setText("You cannot donate budget to yourself!");
+                            masterToast.show();
+                        }
+                        else donate(uID);
                     }
-                    else donate(uID);
-                }
-            });
+                });
+            }
         }
     }
 
@@ -232,7 +234,7 @@ public class StatisticScreen extends BaseActivity {
             holder.uBudget.setText(Integer.toString(part.budget));
             holder.userID.setText(part.uID);
             holder.uID = part.uID;
-            if(part.username.equals(getUName())){
+            if(part.uID.equals(getUid())){
                 holder.butDon.setVisibility(View.GONE);
                 holder.butReq.setVisibility(View.GONE);
             }
@@ -253,11 +255,7 @@ public class StatisticScreen extends BaseActivity {
     }
 
     private void request(final String uid){
-        String target = uid;
         Date time = new Date();
-
-        Log.d("StatScreen","Request size " + request.size());
-
         //Update previous request to ignored (flag 4)
         if(request.size() > 0) {
             for(int i = 0; i < request.size(); i++){
@@ -269,7 +267,7 @@ public class StatisticScreen extends BaseActivity {
         //Insert new request
         String key = mainData.child("/Message/" + roomKey + "/").push().getKey();
         String reqMess = "Request from " + getUName();
-        Message mess = new Message(target, reqMess, 0, 0, time.toString(), getUid(), 1);
+        Message mess = new Message(uid, reqMess, 0, 0, time.toString(), getUid(), 1);
         Map<String, Object> sendMessage = mess.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/Message/" + roomKey + "/" + key, sendMessage);

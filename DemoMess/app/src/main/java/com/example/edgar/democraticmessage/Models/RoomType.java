@@ -22,6 +22,8 @@ public class RoomType {
 
     public int startingBudget;
 
+    public int roomClass;
+
 
     public RoomType() {
     }
@@ -30,7 +32,7 @@ public class RoomType {
                     int budgetlimit, int startingBudget,
                     String conferencetype, int participants,
                     String password,
-                    String roomOwner) {
+                    String roomOwner, int roomClass) {
         this.roomname = roomname;
         this.budgettype = budgettype;
         this.budgetlimit = budgetlimit;
@@ -40,6 +42,7 @@ public class RoomType {
         this.currentParticipants = 1;
         this.password = password;
         this.roomOwner = roomOwner;
+        this.roomClass = roomClass;
     }
 
     @Exclude
@@ -54,6 +57,7 @@ public class RoomType {
         result.put("currentParticipants", currentParticipants);
         result.put("password", password);
         result.put("roomOwner", roomOwner);
+        result.put("roomClass", roomClass);
         return result;
     }
 }

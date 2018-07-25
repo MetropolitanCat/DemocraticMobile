@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,7 +19,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -32,17 +30,12 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -148,6 +141,7 @@ public class Room extends BaseActivity {
                     //Update the user service
                     dataService.setBudgetType(room.budgettype);
                     dataService.setRoomType(room.conferencetype);
+                    dataService.setClassType(room.roomClass);
                 }
 
                 @Override
@@ -166,12 +160,15 @@ public class Room extends BaseActivity {
     };
 
     public void goRequestView(View v){
-        if(!reqViewLock){
-            clickVibrate();
-            Intent intent = new Intent(Room.this, RequestView.class);
-            intent.putExtra("RoomKey",roomData);
-            reqViewLock = true;
-            startActivity(intent);
+        if(dataService.getClassType() == 0){
+            if(!reqViewLock){
+                clickVibrate();
+                Intent intent = new Intent(Room.this, RequestView.class);
+                intent.putExtra("RoomKey",roomData);
+                intent.putExtra("roomClass",dataService.getClassType());
+                reqViewLock = true;
+                startActivity(intent);
+            }
         }
     }
 
@@ -201,7 +198,6 @@ public class Room extends BaseActivity {
                         //Update budget value in database
                         if(!reqViewLock){
                             roomInfo.child("budget").setValue(dataService.getBudget());
-                            Log.d("Room","Database update for budget");
                             reqViewLock = true;
                         }
 
@@ -229,8 +225,6 @@ public class Room extends BaseActivity {
                 }
                 else {
                     if(!delete)roomInfo.child("timeUsed").setValue(dataService.getTimeUsed());
-                    Log.d("Time Used", "UserInf !set");
-                    Log.d("Time Use Val", "" + dataService.getTimeUsed());
                 }
             }
 
@@ -307,25 +301,27 @@ public class Room extends BaseActivity {
             mprivMess = itemView.findViewById(R.id.messageType);
             mRef = itemView.findViewById(R.id.messageRef);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mprivMess.getText().toString().equals("0")){
-                        if (!donateLock) {
-                            if(mUID.getText().toString().equals(getUid())){
-                                masterToast.setText("You cannot donate budget to yourself!");
-                                masterToast.show();
+            if(dataService.getClassType() == 0){
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(mprivMess.getText().toString().equals("0")){
+                            if (!donateLock) {
+                                if(mUID.getText().toString().equals(getUid())){
+                                    masterToast.setText("You cannot donate budget to yourself!");
+                                    masterToast.show();
+                                }
+                                else quickDon(mName.getText().toString(), mUID.getText().toString());
                             }
-                            else quickDon(mName.getText().toString(), mUID.getText().toString());
+                        }
+                        else if(mprivMess.getText().toString().equals("1")){
+                            if(mName.getText().toString().equals(getUid())){
+                                goRequest(mUID.getText().toString(), mRef.getText().toString());
+                            }
                         }
                     }
-                    else if(mprivMess.getText().toString().equals("1")){
-                        if(mName.getText().toString().equals(getUid())){
-                            goRequest(mUID.getText().toString(), mRef.getText().toString());
-                        }
-                    }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -338,8 +334,8 @@ public class Room extends BaseActivity {
         private final List<String> mMessageIds = new ArrayList<>();
         private final List<Message> mMessages = new ArrayList<>();
         //Setup notification sound
-        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        final Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        final Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 
         private MessageAdapter(final Context context, DatabaseReference ref) {
             mContext = context;
@@ -350,6 +346,7 @@ public class Room extends BaseActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                     // A new message has been added, add it to the displayed list
                     Message mMessage = dataSnapshot.getValue(Message.class);
+                    assert mMessage != null;
                     switch (mMessage.privMess){
                      case 0:
                          mMessageIds.add(dataSnapshot.getKey());
@@ -581,6 +578,7 @@ public class Room extends BaseActivity {
     }
 
     public void viewSpenders(View v){
+        clickVibrate();
         if (!spendLock){
             Intent intent = new Intent(Room.this, SpenderList.class);
             intent.putExtra("RoomKey",roomData);
@@ -591,7 +589,7 @@ public class Room extends BaseActivity {
 
     private int countCost(String input){
         int cost = 0;
-        String trimmed = input.toString().trim();
+        String trimmed = input.trim();
         switch (dataService.getBudgetType()){
             case "Word":
                 cost = trimmed.isEmpty() ? 0 : trimmed.split("\\s+").length;
@@ -631,7 +629,26 @@ public class Room extends BaseActivity {
                             // User is null, error out
                             masterToast.setText("Could not fetch user");
                             masterToast.show();
-                        } else {
+                        }
+                        else if(dataService.getClassType() == 3){
+                            int budgetCost = countCost(message);
+                            dataService.addTimeUsed(budgetCost);
+                            reqViewLock = false;
+                            getUserInfo(false);
+
+                            //Get current time
+                            time = new Date();
+
+                            //Send message to database
+                            String key = mDatabase.child(roomKey).push().getKey();
+                            Message mess = new Message(user.username , message, budgetCost, dataService.getBudget(), time.toString(),getUid(),0);
+                            Map<String, Object> sendMessage = mess.toMap();
+                            Map<String, Object> childUpdates = new HashMap<>();
+                            childUpdates.put(roomKey + key, sendMessage);
+                            mDatabase.updateChildren(childUpdates);
+                            messageBody.setText("");
+                        }
+                        else {
                             //Check to see if the user has any budget left
                             //If the user has budget left, count the length of the message based on the talk type of the room
                             if(!dataService.getEmpty()){
@@ -648,7 +665,6 @@ public class Room extends BaseActivity {
                                     //If its not over limit, update the user service and the database
                                     dataService.setBudget(budgetCheck(dataService.getBudget(), budgetCost));
                                     dataService.addTimeUsed(budgetCost);
-                                    Log.d("Time Used", "Message");
                                     reqViewLock = false;
                                     getUserInfo(false);
 
@@ -821,7 +837,6 @@ public class Room extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("Time Used", "OnResume");
         //Update the user service
         getUserInfo(true);
         donateLock = false;
@@ -838,6 +853,7 @@ public class Room extends BaseActivity {
             case R.id.infoPart:
                 intent = new Intent(Room.this, StatisticScreen.class);
                 intent.putExtra("RoomKey",roomData);
+                intent.putExtra("roomClass",dataService.getClassType());
                 clickVibrate();
                 startActivity(intent);
                 return true;

@@ -9,9 +9,6 @@
     <string name="alertYes">Yes</string>
     <string name="alertNo">No</string>
 
-    <string name="requestTitle">Request</string>
-    <string name="requestMess">You have a request</string>
-
     <string-array name="roomType">
         <item>Basic</item>
         <item>Blind Man</item>

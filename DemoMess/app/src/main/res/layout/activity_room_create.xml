@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.edgar.democraticmessage.Activities.RoomCreate"
-    tools:layout_editor_absoluteY="81dp">
+    tools:layout_editor_absoluteY="89dp">
 
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="17dp"
+        android:layout_marginBottom="20dp"
         android:onClick="setupRoom"
         android:text="Setup"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,18 +26,19 @@
         android:hint="Number of participants"
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintStart_toStartOf="@+id/roomPass" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/roomPass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="7dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="text"
         app:layout_constraintBottom_toTopOf="@+id/roomPart"
-        app:layout_constraintStart_toStartOf="@+id/roomBudget" />
+        app:layout_constraintStart_toStartOf="@+id/roomPart" />
 
     <EditText
         android:id="@+id/roomBudget"
@@ -54,7 +55,7 @@
         android:id="@+id/messageName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="208dp"
+        android:layout_marginTop="206dp"
         android:ems="10"
         android:hint="Room Name"
         android:inputType="text"
@@ -73,7 +74,20 @@
         android:id="@+id/spinnerRT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
         app:layout_constraintStart_toStartOf="@+id/messageName"
         app:layout_constraintTop_toBottomOf="@+id/messageName" />
+
+    <EditText
+        android:id="@+id/roomClassSpec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="44dp"
+        android:ems="10"
+        android:hint="Class Spec"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/roomBudget"
+        app:layout_constraintTop_toBottomOf="@+id/roomBudget" />
 
 </android.support.constraint.ConstraintLayout>

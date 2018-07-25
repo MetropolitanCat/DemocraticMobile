@@ -7,12 +7,10 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.edgar.democraticmessage.Models.Participant;
 import com.example.edgar.democraticmessage.R;
 import com.example.edgar.democraticmessage.Services.UserData;
@@ -133,13 +131,11 @@ public class Donate extends BaseActivity {
                 dataService.setBudget(newBudget);
                 //Set your new budget
                 data.child("participants").child(dataService.getRoomKey()).child(getUid()).child("budget").setValue(dataService.getBudget());
-                Log.d("Donate", "Set new budget");
 
                 int newBud = Integer.parseInt("" + dUBud.getText()) + amount;
 
                 //Set the targets new budget
                 data.child("participants").child(dataService.getRoomKey()).child(dTarget).child("budget").setValue(newBud);
-                Log.d("Donate", "Set target budget");
 
                 dataService.addDonUsed();
 

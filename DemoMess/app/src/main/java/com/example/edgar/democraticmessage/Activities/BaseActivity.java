@@ -5,7 +5,6 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 import android.os.Vibrator;
 
@@ -16,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +72,6 @@ public class BaseActivity extends AppCompatActivity {
                 assert user!= null;
                 nameIds.add(dataSnapshot.getKey());
                 name.add(user);
-                Log.d("Base","Size is " + nameIds.size());
             }
 
             @Override
